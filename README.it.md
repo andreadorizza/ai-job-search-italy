@@ -97,9 +97,13 @@ da solo: non c'è nessun registro da aggiornare.
 
 ### In arrivo per l'Italia
 
-ClicLavoro, Adzuna Italia, Talent.com, gli ATS aziendali (Greenhouse, Lever,
-Workday) e — se l'API ufficiale copre l'Italia — InfoJobs. Lo stato aggiornato
-è in [`FORK.md`](FORK.md).
+Le agenzie per il lavoro italiane, a partire da **Randstad**: pubblicano i
+dati strutturati `schema.org/JobPosting` su ogni annuncio, quindi arrivano
+titolo, azienda, sede, scadenza e **RAL** senza doverli estrarre dall'HTML.
+
+**InfoJobs non c'è più**: ha chiuso il 31 dicembre 2025 e ha cancellato tutti i
+dati degli utenti. Anche ClicLavoro non pubblica più annunci. Lo stato
+aggiornato di ogni portale è in [`FORK.md`](FORK.md).
 
 ### Portali ad accesso limitato
 

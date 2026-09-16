@@ -1,5 +1,5 @@
 ---
-framework_version: 1.3.0
+framework_version: 1.3.1
 ---
 
 # Job Evaluation Framework
@@ -173,7 +173,7 @@ Present the evaluation as:
 
 ### Company Research Checklist
 - [ ] Checked company website (mission, values, recent news)
-- [ ] Checked review sites (Glassdoor, Indeed, InfoJobs, etc.)
+- [ ] Checked review sites (Glassdoor, Indeed, etc. - InfoJobs Italia closed in December 2025)
 - [ ] Checked LinkedIn for team size, recent hires, connections
 - [ ] Checked media for restructuring, growth, or workplace issues
 - [ ] Identified network contacts who may know the team/manager
