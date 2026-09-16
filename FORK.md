@@ -143,6 +143,22 @@ sync watch** issue stops resurfacing them. Commits we *do* port drop off
 automatically once cherry-picked, and commits touching only files this fork
 never had are skipped without an entry.
 
+## Portal investigation log
+
+Findings from probing each candidate, so they are not re-derived. Re-check
+before acting on an old entry — portals change.
+
+| Portal | State | Detail |
+|---|---|---|
+| **EURES** | **shipped** | Official EU JSON API, no key, robots-allowed. `.agents/skills/eures-search/` |
+| LinkedIn, freehire | shipped (upstream) | Both already cover Italy; LinkedIn takes `-l "Milano, Italy"` |
+| **ClicLavoro** | **dead end** | No longer hosts vacancies. `/Pagine/Cerca-Offerte.aspx` 404s and the site is now guides, news and labour-market statistics. Job matching moved to **SIISL** (`siisl.lavoro.gov.it`), which is SPID-login-walled — so out of scope under `/add-portal`'s auth-wall rule. |
+| **Adzuna Italy** | blocked on credentials | Official API, free App ID/Key from developer.adzuna.com, Italy index exists. Cannot ship: `/add-portal` Step 4 requires a live search + detail run, and that needs a key nobody has registered yet. Register one, then this is a clean portal. |
+| **InfoJobs** | blocked on credentials + unverified | Official REST API at `api.infojobs.net` (Client ID/Secret). Documentation describes it as Spain's offer database and **no separate `.it` developer programme was found** — Italy coverage must be confirmed before building. The website itself answers bot challenges, so scraping is not the fallback. |
+| **Talent.com** | viable, not built | robots-allowed, returns real Italian results. But its `ld+json` carries only vacancy URLs (an `ItemList` of `WebPage`), so titles/companies need regex over ~660 KB of markup — a fragile scraper, worth doing only if broader coverage is wanted. |
+| **Company ATS boards** | viable, needs board tokens | `boards-api.greenhouse.io/v1/boards/<token>/jobs` and `api.lever.co/v0/postings/<company>?mode=json` are public, unauthenticated JSON and verified working (Greenhouse returned 647 real jobs for a known board). The blocker is discovery: board tokens are per-company slugs and cannot be guessed — eight plausible Italian tokens all 404'd. Needs tokens read off each company's careers page, or a user-supplied list. |
+| InPA, Jobrapido, Subito, Monster, Indeed | restricted tier | See the access table in the README and the tier rules below. No open-source scraper is reusable for any of them: the Subito projects target classifieds rather than Lavoro, and the InPA ones are commercial Apify actors. |
+
 ## Portal access tiers
 
 Portals are `open` or `restricted`. Restricted means the portal's robots.txt

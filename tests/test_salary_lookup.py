@@ -170,6 +170,51 @@ class TestMatchScoreAnglicize(unittest.TestCase):
         self.assertGreater(score, 0)
 
 
+class TestItalianCompanyNames(unittest.TestCase):
+    """Italian accents used to be deleted rather than folded (fork issue).
+
+    normalize() kept only [a-zæøåöäü0-9], so "Società" became "societ" and
+    stopped matching "Societa" in the salary data. These pin both halves of the
+    fix: the accent survives normalize(), and anglicize() folds it to ASCII.
+    """
+
+    def test_accents_survive_normalization(self):
+        # "Italiana" is part of the name, not country noise: only a bare
+        # "Italia" token is stripped, exactly as "Danmark" is upstream.
+        self.assertEqual(normalize("Società Italiana"), "societàitaliana")
+        self.assertEqual(normalize("Caffè Borbone"), "caffèborbone")
+        self.assertEqual(normalize("Azienda Più"), "aziendapiù")
+
+    def test_accents_fold_to_ascii_for_cross_matching(self):
+        self.assertEqual(anglicize(normalize("Caffè Borbone")), "caffeborbone")
+        self.assertEqual(anglicize(normalize("Azienda Più")), "aziendapiu")
+
+    def test_accented_and_unaccented_spellings_match_each_other(self):
+        self.assertGreater(match_score("Caffe Borbone", "Caffè Borbone S.r.l."), 0)
+        self.assertGreater(match_score("Caffè Borbone", "Caffe Borbone"), 0)
+
+    def test_core_words_keep_accented_letters(self):
+        self.assertEqual(extract_core_words("Caffè Borbone S.r.l."), ["caffè", "borbone"])
+
+    def test_italian_legal_forms_are_stripped(self):
+        for suffix in ("S.p.A.", "SpA", "S.r.l.", "Srl", "S.a.s.", "Sas", "S.n.c.", "Snc"):
+            with self.subTest(suffix=suffix):
+                self.assertEqual(normalize(f"Barilla {suffix}"), "barilla")
+
+    def test_country_noise_is_stripped_like_the_danish_equivalent(self):
+        self.assertEqual(normalize("Perfetti Van Melle Italia S.p.A."), "perfettivanmelle")
+
+    def test_same_company_matches_across_legal_form_variants(self):
+        self.assertEqual(match_score("Barilla", "Barilla G. e R. Fratelli S.p.A."), match_score("Barilla", "Barilla G. e R. Fratelli Spa"))
+
+    def test_danish_handling_is_unchanged(self):
+        # The Italian additions must not regress the upstream Nordic behaviour.
+        self.assertEqual(normalize("Ørsted A/S"), "ørsted")
+        self.assertEqual(anglicize(normalize("Ørsted A/S")), "orsted")
+        self.assertEqual(normalize("Carlsberg Danmark A/S"), "carlsberg")
+        self.assertGreater(match_score("Maersk", "Mærsk A/S"), 0)
+
+
 class TestMatchScoreNoOverlap(unittest.TestCase):
     def test_completely_unrelated_names_return_zero(self):
         self.assertEqual(match_score("Apple", "Vestas Wind Systems"), 0)
