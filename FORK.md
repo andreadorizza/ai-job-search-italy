@@ -109,6 +109,22 @@ equivalent checks, so the guarantee holds in both languages.
 upstream edit to those paths conflicts. Resolution is mechanical — keep ours,
 and port anything worth having into the `.en.md` copies.
 
+### Editing as an agent
+
+Check the tier before the first edit, not at review time. Prefer a change that fits
+entirely in tier 1: an addition to a fork-owned file costs nothing at merge time, while
+the same wording in `AGENTS.md`, `README.en.md` or a skill file buys a conflict on every
+sync. `CLAUDE.md` is loaded on every turn, so a rule written there needs no pointer from
+`.claude/` restating it. `CHANGELOG.md` is upstream's - the fork records nothing in it.
+
+Two traps, both found the hard way:
+
+- **Never quote a `[PLACEHOLDER]` token in prose.** `/setup` replaces every token it
+  finds, so a sentence that mentions one gets rewritten into nonsense. Describe the
+  unfilled state instead - "while that line is still unfilled".
+- **A guard on prose must collapse whitespace before asserting**, or rewrapping a
+  paragraph fails a test that is about wording.
+
 ## Anchors that must survive translation
 
 Guard tests parse these literally. Translate the prose around them; never the
