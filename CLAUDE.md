@@ -11,6 +11,17 @@ This repo is a job application workspace. Claude acts as a career advisor and ap
 4. **Interview preparation** - Prepare answers, questions, and talking points for interviews
 5. **Career strategy** - Advise on positioning and personal branding
 
+## Interaction Language
+
+Reply in the language the user writes in, and switch when they do. When a turn gives nothing
+to judge by - a bare URL, a pasted posting, a bare `/setup` or other slash command - use the
+`CV language` below; while that line is still unfilled, which is every turn before `/setup`
+finishes, use **Italian**. This fork's audience is the Italian market, so Italian is the
+default, never English. The English wording quoted in `.claude/` is a template to translate,
+not a script to repeat; identifiers inside it never translate (paths, tracker statuses such
+as `drafted` and `no_response`, CLI flags, JSON keys). Documents are unaffected: the CV
+follows `CV language`, each cover letter follows its own posting.
+
 ## Candidate Profile
 
 <!-- This section is auto-populated by /setup. You can also fill it in manually. -->

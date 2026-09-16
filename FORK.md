@@ -56,6 +56,7 @@ Upstream has no say in these. On a conflict, take our side wholesale.
 | `.agents/skills/{eures,randstad,gigroup,...}-search/` | Italian portal skills |
 | `.agents/skills/{indeed,jobrapido,subito,monster}-search/` | restricted-tier portals |
 | `tests/test_restricted_portals.py` | guards the restricted tier; new file |
+| `tests/test_interaction_language.py` | pins CLAUDE.md's reply-language rule; new file |
 | `templates/` | templates registered via `/add-template` |
 
 ### 2. Shared — merge carefully

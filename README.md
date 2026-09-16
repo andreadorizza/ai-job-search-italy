@@ -167,6 +167,10 @@ portale protetto da anti-bot può comunque rifiutarsi di rispondere.
 
 ## CV e lettere in italiano
 
+Claude ti risponde **nella lingua in cui scrivi**, e in **italiano** quando non
+può dedurla — un `/setup` a secco, per esempio (`## Interaction Language` in
+`CLAUDE.md`). La lingua dei documenti è una scelta separata:
+
 Il CV è in **italiano** per impostazione predefinita (`CV language` in
 `CLAUDE.md`); passa all'inglese quando serve. La lettera di presentazione segue
 sempre la lingua dell'annuncio, quindi un annuncio in inglese produce una
