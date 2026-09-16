@@ -154,6 +154,88 @@ wrong with the workflow files; click the banner on the Actions tab.
 Until that is done there is no CI, and the weekly **Upstream sync watch** issue
 never fires, so `tools/upstream_triage.py` has to be run by hand.
 
+## Branch protection on this fork
+
+`master` was unprotected until this was set up. `ci.yml`'s own header says why it
+matters: the `security-guards` job catches "accidents and casual attempts, not a
+determined author - branch protection with required checks and human review of
+workflow/settings diffs remain the real backstop." A PR can edit the workflow
+that guards it, so the guard has to live in Settings, not in the repo.
+
+Apply it by importing `.github/rulesets/master.json`:
+*Settings -> Rules -> Rulesets -> New ruleset -> Import a ruleset*. It cannot be
+applied from a Claude Code session - the sandbox proxy refuses writes to the
+GitHub settings API (`403 "Write access to this GitHub API path is not permitted
+through this proxy"`), and the GitHub MCP server exposes no ruleset tool. Reads
+work fine, so the state can always be checked with
+`GET /repos/andreadorizza/ai-job-search-italy/rulesets`.
+
+What the ruleset does, and why each choice:
+
+| Rule | Value | Reason |
+|------|-------|--------|
+| `deletion`, `non_fast_forward` | on | Nothing legitimate force-pushes or deletes `master` here. |
+| `pull_request` | **0 required approvals** | Solo repo: GitHub forbids approving your own PR, so 1 approval would deadlock every merge. The value is that changes arrive as a reviewable diff. |
+| `required_review_thread_resolution` | on | Makes an unresolved Claude Code Review thread block the merge instead of being scrolled past. |
+| `required_status_checks` | 5 contexts, strict | The teeth. Strict = branch must be current with `master` before merging. |
+| Bypass | Repository admin (`RepositoryRole` 5) | Escape hatch if CI itself breaks. It also means this stops accidents, not you. |
+| Signed commits | **deliberately absent** | Agent pushes from a container are unsigned; requiring signatures would break the normal `claude/*` -> PR flow. |
+
+Required contexts must match GitHub's job names byte-for-byte. Verified against
+a real run (`/actions/runs/<id>/jobs`):
+
+- `Lint skills, commands, settings`
+- `Security guards (permissions, gitignore, manifests)`
+- `Compile example CV and cover letter (texlive-latest)`
+- `Compile example CV and cover letter (debian-bookworm)`
+- `Python tool tests (Python 3.12)`
+
+**Never require these**, and re-check the list after touching `ci.yml`:
+
+- `CLI checks <tool>` - the matrix is discovered at runtime from
+  `.agents/skills/*/cli/package.json`. `/add-portal` or a removed portal changes
+  which names exist; a required context that stops appearing leaves every PR
+  waiting on a check that will never report.
+- `Placeholder integrity (upstream template only)` - gated on
+  `github.repository == 'MadsLorentzen/ai-job-search'`, so it never runs here.
+- `Dependency review` - runs only on `pull_request`, and warns-and-skips until
+  *Settings -> Advanced Security -> Dependency graph* is enabled.
+- Bumping the Python matrix strands any pinned `Python tool tests (Python X.Y)`
+  context. 3.12 is pinned because it is the version the other jobs use.
+
+Prerequisite, already satisfied: CI must actually be registered (see *GitHub
+Actions on this fork*). The API reports the `CI` workflow `active` with runs on
+`master` and on `claude/*` PRs. Requiring checks on a fork where the Actions-tab
+banner was never clicked would block every PR permanently. `Upstream watch` is
+`disabled_fork` - expected, and unrelated.
+
+Worth enabling alongside, none of which is branch protection:
+
+- **Secret scanning + push protection** - free on public repos, and the thing
+  that stops a pasted key or a personal-data slip from becoming permanent public
+  history. The gitignore rules prevent commits; push protection prevents pushes.
+- **Dependency graph** - turns `ci.yml`'s `dependency-review` no-op into a real check.
+- **Actions -> Fork pull request workflows: require approval for all external
+  contributors** - anyone can fork a public repo and open a PR.
+- **Workflow permissions: read-only**, and uncheck *Allow GitHub Actions to
+  create and approve pull requests*. Both workflows already declare their own
+  `permissions:`; this covers the next one that forgets.
+- **Private vulnerability reporting** - `SECURITY.md` is upstream's and routes
+  reporters to upstream's advisory form, so fork-specific findings have nowhere
+  to go.
+
+### Upstream is not the model here
+
+Upstream's settings are not publicly readable (the rules API needs read access
+this session does not have for that repo), so "copy upstream" is not verifiable.
+What its history shows: of the last 60 commits on `MadsLorentzen/ai-job-search`
+`master`, 48 have committer `GitHub <noreply@github.com>` (squash-merged PRs) and
+12 were pushed directly by the owner - including `dd02c82 feat(freehire-search)`,
+not just changelog housekeeping. So upstream either requires no PR or bypasses
+the rule. Its `ci.yml` is byte-identical to this fork's, so the job names above
+are the same there; that says which checks exist, not which are enforced.
+Upstream squash-merges, this fork uses merge commits.
+
 ## Pulling upstream in
 
 ```bash
