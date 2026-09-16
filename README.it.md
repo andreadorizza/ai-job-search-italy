@@ -85,12 +85,31 @@ da solo: non c'è nessun registro da aggiornare.
 - **LinkedIn** — endpoint pubblici `jobs-guest`, nessuna dipendenza, funziona
   con qualsiasi città (`-l "Milano, Italy"`). Solo uso personale.
 - **freehire** — aggregatore tech con API REST pubblica, risultati strutturati.
+- **EURES** — il portale ufficiale della Commissione Europea. API pubblica, senza
+  credenziali, copre l'Italia e tutta l'UE. Filtra per regione italiana per nome
+  (`-l "Lombardia,Veneto"`) o per codice NUTS.
+
+  Due cose da sapere: i titoli sono etichette ESCO, non il titolo scelto
+  dall'azienda, e a volte c'entrano poco con il ruolo reale — leggi sempre la
+  descrizione. E molti annunci arrivano da agenzie per il lavoro, quindi il
+  campo azienda spesso riporta l'agenzia. In compenso le descrizioni italiane
+  indicano quasi sempre CCNL e RAL.
+
+- **Randstad Italia** — una delle maggiori agenzie per il lavoro in Italia.
+  Pubblica i dati strutturati `schema.org/JobPosting` su ogni annuncio, quindi
+  arrivano titolo, sede, tipo di contratto, **scadenza della candidatura** e
+  **RAL** senza doverli estrarre dall'HTML. Filtra per regione o città
+  (`-l Lombardia`, `-l Milano`).
+
+  Nota: il campo azienda riporta quasi sempre "Randstad" e non il cliente
+  finale — è il funzionamento normale di un'agenzia. Il settore e il comune
+  sono nella descrizione.
 
 ### In arrivo per l'Italia
 
-EURES (l'API pubblica dell'UE), ClicLavoro, Adzuna Italia, Talent.com, gli ATS
-aziendali (Greenhouse, Lever, Workday) e — se l'API ufficiale copre l'Italia —
-InfoJobs. Lo stato aggiornato è in [`FORK.md`](FORK.md).
+**InfoJobs non c'è più**: ha chiuso il 31 dicembre 2025 e ha cancellato tutti i
+dati degli utenti. Anche ClicLavoro non pubblica più annunci. Lo stato
+aggiornato di ogni portale è in [`FORK.md`](FORK.md).
 
 ### Portali ad accesso limitato
 

@@ -5,6 +5,8 @@ from types import SimpleNamespace
 
 from salary_lookup import format_entry
 from tools.convert_salary_excel import (
+    CITY_PATTERNS,
+    COMPANY_PATTERNS,
     INDEX_PATTERNS,
     detect_column_type,
     header_matches,
@@ -371,6 +373,55 @@ class DetectColumnTypeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ItalianHeaderTests(unittest.TestCase):
+    """Italian column headers, added for this fork (see FORK.md).
+
+    Italian writes headers as separate words ("Numero dipendenti"), so the
+    Italian tokens are whole-token matches only and deliberately add nothing to
+    COMPOUND_PATTERNS - a substring match on "media" would fire inside
+    unrelated words and mis-split a category name.
+    """
+
+    def test_company_headers(self):
+        # detect_column_type only classifies count/index; company and city
+        # columns are recognised through header_matches.
+        for header in ("Azienda", "Ragione sociale", "Datore di lavoro", "Impresa"):
+            with self.subTest(header=header):
+                self.assertTrue(header_matches(header, COMPANY_PATTERNS))
+
+    def test_city_headers(self):
+        for header in ("Città", "Comune", "Sede", "Provincia", "Luogo di lavoro"):
+            with self.subTest(header=header):
+                self.assertTrue(header_matches(header, CITY_PATTERNS))
+
+    def test_count_headers(self):
+        for header in ("Numero", "Numero dipendenti", "Addetti", "Conteggio"):
+            with self.subTest(header=header):
+                self.assertEqual(detect_column_type(header), "count")
+
+    def test_salary_headers(self):
+        for header in ("Retribuzione", "Stipendio medio", "RAL", "Indice", "Mediana"):
+            with self.subTest(header=header):
+                self.assertEqual(detect_column_type(header), "index")
+
+    def test_accented_and_unaccented_citta_both_match(self):
+        # The tokenizer used to split "Città" into "citt" + "a", so the
+        # accented spelling could never match its own pattern.
+        self.assertTrue(header_matches("Città", CITY_PATTERNS))
+        self.assertTrue(header_matches("Citta", CITY_PATTERNS))
+
+    def test_italian_tokens_match_as_whole_words_only(self):
+        # "media" must not fire inside "Intermediazione", the way a compound
+        # token would. This is why Italian adds nothing to COMPOUND_PATTERNS.
+        self.assertIsNone(detect_column_type("Intermediazione"))
+
+    def test_danish_headers_are_unaffected(self):
+        self.assertTrue(header_matches("Firma", COMPANY_PATTERNS))
+        self.assertTrue(header_matches("By", CITY_PATTERNS))
+        self.assertEqual(detect_column_type("Antal alle"), "count")
+        self.assertEqual(detect_column_type("Lønindeks alle"), "index")
 
 
 class ParseNumericCellLocaleTests(unittest.TestCase):

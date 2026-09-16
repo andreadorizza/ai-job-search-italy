@@ -38,16 +38,29 @@ except ImportError:
 
 
 # Column name patterns for auto-detection
-COMPANY_PATTERNS = {"firma", "company", "virksomhed", "employer", "arbejdsgiver"}
-CITY_PATTERNS = {"by", "city", "kommune", "location", "lokation", "sted"}
-COUNT_PATTERNS = {"antal", "count", "number", "n", "employees", "medarbejdere"}
-INDEX_PATTERNS = {"indeks", "index", "idx", "salary", "løn", "median", "average", "gennemsnit"}
+# Characters that count as part of a header token. Italian accented letters are
+# included: without them the tokenizer split "Città" into "citt" + "a", so an
+# accented Italian header could never match its own pattern.
+WORD_CHARS = "a-zæøåöäüàáèéìíòóùúç0-9"
+
+COMPANY_PATTERNS = {"firma", "company", "virksomhed", "employer", "arbejdsgiver",
+                    "azienda", "ragione", "datore", "impresa"}
+CITY_PATTERNS = {"by", "city", "kommune", "location", "lokation", "sted",
+                 "citta", "città", "comune", "sede", "provincia", "luogo"}
+COUNT_PATTERNS = {"antal", "count", "number", "n", "employees", "medarbejdere",
+                  "numero", "dipendenti", "addetti", "conteggio"}
+INDEX_PATTERNS = {"indeks", "index", "idx", "salary", "løn", "median", "average", "gennemsnit",
+                  "indice", "retribuzione", "stipendio", "ral", "mediana", "media"}
 # "Compound" tokens: pattern words allowed to match as a substring of a larger
 # header token, for languages that glue words together (e.g. Danish "lønindeks"
 # -> løn + indeks). Languages that write headers as separate words need none.
 # Ships populated for this repo's Danish demonstration data; a fork targeting
 # another locale edits this constant.
 COMPOUND_PATTERNS = {"antal", "indeks", "løn", "gennemsnit", "medarbejdere"}
+# Italian is not a compounding language - its headers are separate words
+# ("Numero dipendenti", "Retribuzione media"), so the Italian tokens above
+# deliberately add nothing here: a substring match on "media" would also
+# fire inside unrelated words and mis-split a category name.
 # Identifier columns (employee id, Danish "personnummer", etc.) are never salary
 # data. They are dropped at classification so they are not mistaken for a salary
 # category. Matched as whole tokens only, like other pattern sets.
@@ -93,7 +106,7 @@ def header_matches(header, patterns):
     languages that form compound words.
     """
     h = header.lower().strip()
-    tokens = set(re.findall(r"[a-zæøåöäü0-9]+", h))
+    tokens = set(re.findall(rf"[{WORD_CHARS}]+", h))
 
     for p in patterns:
         if p in tokens:
@@ -113,7 +126,7 @@ def strip_type_patterns(header, patterns):
     """
     name = header.lower()
     for p in patterns:
-        name = re.sub(rf"(?<![a-zæøåöäü0-9]){re.escape(p)}(?![a-zæøåöäü0-9])", "", name)
+        name = re.sub(rf"(?<![{WORD_CHARS}]){re.escape(p)}(?![{WORD_CHARS}])", "", name)
         if p in COMPOUND_PATTERNS:
             name = name.replace(p, "")
     return name.strip(" _-")

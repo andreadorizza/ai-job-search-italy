@@ -53,7 +53,7 @@ Upstream has no say in these. On a conflict, take our side wholesale.
 | `README.it.md`, `SETUP.it.md` | Italian-language docs; no upstream counterpart |
 | `CLAUDE.md` | the candidate profile |
 | `.claude/skills/job-application-assistant/10-mercato-italiano.md` | Italian market conventions; new file |
-| `.agents/skills/{eures,cliclavoro,adzuna,talent,infojobs,ats,inpa}-search/` | Italian portal skills |
+| `.agents/skills/{eures,randstad,gigroup,...}-search/` | Italian portal skills |
 | `.agents/skills/{indeed,jobrapido,subito,monster}-search/` | restricted-tier portals |
 | `tests/test_restricted_portals.py` | guards the restricted tier; new file |
 | `templates/` | templates registered via `/add-template` |
@@ -142,6 +142,86 @@ Upstream commits we have consciously decided never to port go in
 sync watch** issue stops resurfacing them. Commits we *do* port drop off
 automatically once cherry-picked, and commits touching only files this fork
 never had are skipped without an entry.
+
+## Portal investigation log
+
+Findings from probing each candidate, so they are not re-derived. Re-check
+before acting on an old entry — portals change.
+
+| Portal | State | Detail |
+|---|---|---|
+| **EURES** | **shipped** | Official EU JSON API, no key, robots-allowed. `.agents/skills/eures-search/` |
+| LinkedIn, freehire | shipped (upstream) | Both already cover Italy; LinkedIn takes `-l "Milano, Italy"` |
+| **ClicLavoro** | **dead end** | No longer hosts vacancies. `/Pagine/Cerca-Offerte.aspx` 404s and the site is now guides, news and labour-market statistics. Job matching moved to **SIISL** (`siisl.lavoro.gov.it`), which is SPID-login-walled — so out of scope under `/add-portal`'s auth-wall rule. |
+| **Adzuna Italy** | **declined** | Official API with a free key, but dropped on the maintainer's call. |
+| **InfoJobs Italia** | **CLOSED — permanently** | Ceased operations **31 December 2025**; all user accounts and data deleted 1 January 2026 ([official notice](https://assistenza.infojobs.it/hc/it/articles/23116648861084-CHIUSURA-INFOJOBS-ITALIA)). Adevinta withdrew from the Italian market. There is nothing left to integrate — do not re-investigate the `api.infojobs.net` route, it served the Spanish business. |
+| **Talent.com** | viable, not built | robots-allowed, returns real Italian results. But its `ld+json` carries only vacancy URLs (an `ItemList` of `WebPage`), so titles/companies need regex over ~660 KB of markup — a fragile scraper, worth doing only if broader coverage is wanted. |
+| **Company ATS boards** | viable, needs board tokens | `boards-api.greenhouse.io/v1/boards/<token>/jobs` and `api.lever.co/v0/postings/<company>?mode=json` are public, unauthenticated JSON and verified working (Greenhouse returned 647 real jobs for a known board). The blocker is discovery: board tokens are per-company slugs and cannot be guessed — eight plausible Italian tokens all 404'd. Needs tokens read off each company's careers page, or a user-supplied list. |
+| InPA, Jobrapido, Subito, Monster, Indeed | restricted tier | See the access table in the README and the tier rules below. No open-source scraper is reusable for any of them: the Subito projects target classifieds rather than Lavoro, and the InPA ones are commercial Apify actors. |
+
+### SPID is permanently out of scope
+
+Recorded so it is not re-researched. SPID cannot be used to reach login-walled
+Italian job services (SIISL, InPA's authenticated areas), and the blocker is
+legal, not technical:
+
+- SPID is a SAML2 federation. The relying party must be an **AgID-accredited
+  Service Provider** — signed agreement, registered metadata, a qualified
+  signing certificate, and for private entities a contract with an aggregator.
+  A locally-run open-source tool cannot hold that accreditation.
+- The flow is interactive by design: the user chooses an Identity Provider and
+  completes 2FA. There is no machine-to-machine grant to script against.
+- Storing or replaying a user's SPID credentials breaches SPID's own rules, and
+  driving a SPID-authenticated session is precisely the auth-wall bypass
+  `/add-portal` Step 2.4 declines.
+
+Note that [`adellorto/normattiva-mcp`](https://github.com/adellorto/normattiva-mcp),
+sometimes cited as a precedent, **uses no authentication at all** — Normattiva
+publishes an open, unauthenticated OpenData API and that server is a thin
+pass-through. It is not a SPID integration and does not transfer to this problem.
+
+### Measured access map (2026)
+
+Probed with `tools/robots_check.py` plus a live fetch. Re-check before acting on
+an old row.
+
+| Source | robots | Listing page | Structured data | Verdict |
+|---|---|---|---|---|
+| **Randstad.it** | ALLOWED | plain `<a href>` | **full `schema.org/JobPosting`, incl. `baseSalary` (RAL) and `validThrough`** | shipped / building |
+| Gi Group | ALLOWED | plain `<a href>` | **JobPosting present** on `/offerte-lavoro-dettaglio/` pages | **blocked** — `?keyword=` is silently ignored (magazziniere, infermiere and a bogus term all return the identical 20 jobs). WordPress/Bricks; search runs through `admin-ajax.php`, which needs a per-session nonce. Not shipped: a portal whose `--query` does not filter is worse than no portal. |
+| Synergie, Umana, Openjobmetis | ALLOWED | **SPA — no links in HTML** | unknown | needs a per-site XHR endpoint |
+| Indeed.it | ALLOWED | — | detail returns **401** | restricted tier; may be unbuildable |
+| Bakeca.it | ALLOWED | serves `<title>Verifica</title>` | — | bot-check wall; restricted tier |
+| Trovolavoro, Jooble | **DISALLOWED** | — | — | restricted tier |
+| Subito, Adecco, Monster, Manpower | 403 / disallowed | — | — | restricted tier |
+| Jobrapido | landing allowed, **search path disallowed for `*`** | — | — | restricted tier |
+| InPA | **DISALLOWED** | — | — | restricted tier; check dati.gov.it for an open-data release |
+
+#### Restricted tier: tested, and currently empty
+
+The opt-in gate exists and is guarded by `tests/test_restricted_portals.py`, but
+**no candidate is buildable within the contract today**. Measured with an honest
+User-Agent:
+
+| Candidate | Result |
+|---|---|
+| Jooble | `403` + `Just a moment...` — Cloudflare challenge |
+| Subito Lavoro | `403`, empty body |
+| Bakeca | `403` + `<title>Verifica</title>` |
+| Indeed.it | listing allowed, but vacancy pages return **`401`** |
+| Trovolavoro | fetchable (`200`), but the page serves only SEO category links — no vacancy links at all, and robots disallows it anyway |
+
+Every one of these would need browser or TLS impersonation to get past, which
+`/add-portal` bans and which no opt-in flag makes acceptable. **The flag grants
+permission, not access.** Nothing is shipped rather than shipping skills that
+cannot work; the tier is ready the moment a source becomes reachable honestly.
+
+**`schema.org/JobPosting` is the connection method for this market.** The markup
+exists so job aggregators can machine-read postings — it is what Google for Jobs
+consumes — and sites keep it working because breaking it costs them that traffic.
+It is therefore both a legitimate and a far more stable target than CSS
+selectors. One shared extractor reads it; each source only needs its own
+"find the vacancy links" rule.
 
 ## Portal access tiers
 

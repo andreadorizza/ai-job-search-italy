@@ -30,7 +30,17 @@ DATA_FILE = Path(__file__).parent / "salary_data.json"
 SPELLING_VARIANTS = {
     "ø": "o", "æ": "ae", "å": "aa",
     "ö": "o", "ä": "ae", "ü": "u",
+    # Italian. Without these, the character class below deletes the accent
+    # outright rather than folding it - "Societa\u0300" normalized to "societ" and
+    # stopped matching "Societa" in the salary data.
+    "à": "a", "á": "a", "è": "e", "é": "e", "ì": "i", "í": "i",
+    "ò": "o", "ó": "o", "ù": "u", "ú": "u", "ç": "c",
 }
+
+# Characters kept by normalize()/extract_core_words(). Anything outside this set
+# is deleted, so every accented letter the SPELLING_VARIANTS map folds must also
+# appear here - otherwise the accent is dropped before anglicize() ever sees it.
+WORD_CHARS = "a-zæøåöäüàáèéìíòóùúç0-9"
 
 # Legal suffixes and noise to strip when matching company names
 STRIP_PATTERNS = [
@@ -39,6 +49,16 @@ STRIP_PATTERNS = [
     r"\(vg\)", r"\(.*?\)",  # (VG) and other parentheticals
     r"\bdanmark\b", r"\bdenmark\b", r"\bscandinavia\b", r"\bnordic\b",
     r"\bgroup\b", r"\bholding\b",
+    # Italian legal forms, dotted and undotted. The dotted variants use a
+    # lookahead rather than a trailing \b: after "s.p.a." the final character is
+    # a dot, so \b would not hold and the suffix would survive.
+    r"\bs\.p\.a\.?(?![a-z])", r"\bspa\b",
+    r"\bs\.r\.l\.?(?![a-z])", r"\bsrl\b",
+    r"\bs\.a\.s\.?(?![a-z])", r"\bsas\b",
+    r"\bs\.n\.c\.?(?![a-z])", r"\bsnc\b",
+    r"\bs\.c\.a\.?\s?r\.l\.?(?![a-z])", r"\bscarl\b",
+    r"\bs\.s\.d\.?(?![a-z])",
+    r"\bitalia\b", r"\bitaly\b",
     r",\s*.*$",  # everything after comma (sub-entities)
 ]
 
@@ -166,15 +186,15 @@ def normalize(s):
     s = s.lower().strip()
     for pat in STRIP_PATTERNS:
         s = re.sub(pat, "", s)
-    s = re.sub(r"[^a-zæøåöäü0-9]", "", s)
+    s = re.sub(rf"[^{WORD_CHARS}]", "", s)
     return s.strip()
 
 
 def anglicize(s):
-    """Convert Danish/Nordic characters to anglicized equivalents."""
+    """Fold Danish/Nordic and Italian accented characters to ASCII."""
     s = s.lower()
-    for danish, english in SPELLING_VARIANTS.items():
-        s = s.replace(danish, english)
+    for accented, ascii_form in SPELLING_VARIANTS.items():
+        s = s.replace(accented, ascii_form)
     return s
 
 
@@ -183,7 +203,7 @@ def extract_core_words(s):
     s = s.lower()
     for pat in STRIP_PATTERNS:
         s = re.sub(pat, "", s)
-    words = re.findall(r"[a-zæøåöäü0-9]+", s)
+    words = re.findall(rf"[{WORD_CHARS}]+", s)
     return [w for w in words if len(w) > 1]
 
 
