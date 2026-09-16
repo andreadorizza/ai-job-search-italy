@@ -14,10 +14,13 @@ green, breaks the seen_jobs.json dedupe (url_or_company_title_key), and leaves
 emitted only the raw API schema and jobdanmark-search emitted companyName with
 no company/location/date keys until both were normalized.
 
-{helpers.ts, commands/search.ts} are the two files where every registered
-CLI's search output currently lives (HTML-parsing portals normalize in
-helpers.ts, API portals in commands/search.ts). detail.ts is deliberately
-excluded: the contract is about the search output /scrape consumes.
+Scanned: every .ts under cli/src/ except commands/detail.ts. HTML-parsing
+portals normalize in helpers.ts and API portals in commands/search.ts, but a
+portal may also share a normalizer across skills - this fork's JobPosting
+portals read schema.org markup through a source-agnostic jobposting.ts - so
+pinning the scan to two filenames produced a false failure for a CLI that
+does emit the whole contract. detail.ts stays deliberately excluded: the
+contract is about the search output /scrape consumes.
 """
 
 import re
@@ -45,8 +48,13 @@ def derive_contract_fields() -> frozenset[str]:
 
 
 def search_output_source(search_ts: Path) -> str:
-    helpers_ts = search_ts.parent.parent / "helpers.ts"
-    files = [search_ts, helpers_ts] if helpers_ts.exists() else [search_ts]
+    """Every source file the search path can normalize in, except detail.ts."""
+    src_root = search_ts.parent.parent
+    files = sorted(
+        f for f in src_root.rglob("*.ts") if f.name != "detail.ts"
+    )
+    if search_ts not in files:  # a CLI with no helpers/shared modules
+        files.append(search_ts)
     return "\n".join(f.read_text(encoding="utf-8") for f in files)
 
 

@@ -19,7 +19,8 @@
       "Bash(python tools/verify_layout.py:*)",
       "Bash(python3 tools/verify_layout.py:*)",
       "Bash(pdftotext:*)",
-      "Bash(bun run .agents/skills/eures-search/cli/src/cli.ts:*)"
+      "Bash(bun run .agents/skills/eures-search/cli/src/cli.ts:*)",
+      "Bash(bun run .agents/skills/randstad-search/cli/src/cli.ts:*)"
     ]
   }
 }

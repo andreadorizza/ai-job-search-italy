@@ -62,6 +62,7 @@ ALLOWED_PERMISSIONS = {
     "Bash(pdftotext:*)",
     # --- BEGIN italian fork portals (see FORK.md) ---
     "Bash(bun run .agents/skills/eures-search/cli/src/cli.ts:*)",
+    "Bash(bun run .agents/skills/randstad-search/cli/src/cli.ts:*)",
     # --- END italian fork portals ---
 }
 

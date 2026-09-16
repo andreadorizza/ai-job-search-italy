@@ -35,6 +35,7 @@ SHIPPED_PORTAL_HOSTS = {
     "freehire.me",
     # --- BEGIN italian fork portals (see FORK.md) ---
     "europa.eu",  # EURES vacancy pages
+    "randstad.it",  # Randstad Italia vacancy pages
     # --- END italian fork portals ---
 }
 

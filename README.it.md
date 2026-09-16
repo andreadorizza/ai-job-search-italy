@@ -95,11 +95,17 @@ da solo: non c'è nessun registro da aggiornare.
   campo azienda spesso riporta l'agenzia. In compenso le descrizioni italiane
   indicano quasi sempre CCNL e RAL.
 
-### In arrivo per l'Italia
+- **Randstad Italia** — una delle maggiori agenzie per il lavoro in Italia.
+  Pubblica i dati strutturati `schema.org/JobPosting` su ogni annuncio, quindi
+  arrivano titolo, sede, tipo di contratto, **scadenza della candidatura** e
+  **RAL** senza doverli estrarre dall'HTML. Filtra per regione o città
+  (`-l Lombardia`, `-l Milano`).
 
-Le agenzie per il lavoro italiane, a partire da **Randstad**: pubblicano i
-dati strutturati `schema.org/JobPosting` su ogni annuncio, quindi arrivano
-titolo, azienda, sede, scadenza e **RAL** senza doverli estrarre dall'HTML.
+  Nota: il campo azienda riporta quasi sempre "Randstad" e non il cliente
+  finale — è il funzionamento normale di un'agenzia. Il settore e il comune
+  sono nella descrizione.
+
+### In arrivo per l'Italia
 
 **InfoJobs non c'è più**: ha chiuso il 31 dicembre 2025 e ha cancellato tutti i
 dati degli utenti. Anche ClicLavoro non pubblica più annunci. Lo stato
