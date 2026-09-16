@@ -96,12 +96,45 @@ function num(v: unknown): number | null {
   return null
 }
 
-/** schema.org dates are ISO 8601; emit the date part only. */
+/** Day-first date, as Italian sites write it: 16/09/2026 or 16-09-2026. */
+const IT_DATE = /^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/
+
+/**
+ * Dates that cannot be a real job posting. Sites emit epoch-zero values for
+ * "no deadline" surprisingly often - Gi Group publishes `validThrough:
+ * "1970-04-01"` - and surfacing that as a deadline would mark every vacancy
+ * long expired.
+ */
+const EARLIEST_PLAUSIBLE = Date.UTC(2000, 0, 1)
+
+/**
+ * Normalize a schema.org date to YYYY-MM-DD.
+ *
+ * The spec says ISO 8601, but Italian sites routinely publish day-first
+ * dd/mm/yyyy instead, and `Date.parse` reads a slash format as **American
+ * month-first**: "01/12/2026" would silently become 12 January rather than
+ * 1 December. A wrong date is worse than a missing one - it misreports
+ * deadlines and corrupts --jobage filtering - so day-first input is matched
+ * explicitly and never handed to Date.parse.
+ */
 export function isoDate(v: unknown): string | null {
   const s = str(v)
   if (!s) return null
-  const t = Date.parse(s)
-  return Number.isNaN(t) ? null : new Date(t).toISOString().slice(0, 10)
+
+  let ms: number
+  const m = IT_DATE.exec(s)
+  if (m) {
+    const [, day, month, year] = m
+    ms = Date.UTC(Number(year), Number(month) - 1, Number(day))
+    // Date.UTC rolls 32/13 over into the next month/year instead of failing.
+    const d = new Date(ms)
+    if (d.getUTCDate() !== Number(day) || d.getUTCMonth() !== Number(month) - 1) return null
+  } else {
+    ms = Date.parse(s)
+  }
+
+  if (Number.isNaN(ms) || ms < EARLIEST_PLAUSIBLE) return null
+  return new Date(ms).toISOString().slice(0, 10)
 }
 
 /**

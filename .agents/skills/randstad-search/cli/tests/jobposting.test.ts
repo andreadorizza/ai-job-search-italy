@@ -177,7 +177,58 @@ describe("cleanText and isoDate", () => {
 
   test("isoDate keeps only the date part and rejects nonsense", () => {
     expect(isoDate("2026-07-23T10:00:00+0000")).toBe("2026-07-23")
+    expect(isoDate("2026-09-16")).toBe("2026-09-16")
     expect(isoDate("not a date")).toBeNull()
     expect(isoDate(null)).toBeNull()
+  })
+})
+
+describe("isoDate - Italian day-first dates", () => {
+  // The spec says ISO 8601, but Italian sites publish dd/mm/yyyy, and
+  // Date.parse reads a slash format as American month-first. Gi Group's
+  // datePosted is "16/09/2026".
+  test("reads dd/mm/yyyy as day-first, not month-first", () => {
+    expect(isoDate("16/09/2026")).toBe("2026-09-16")
+    // The one that silently corrupted data: 1 December, not 12 January.
+    expect(isoDate("01/12/2026")).toBe("2026-12-01")
+  })
+
+  test("accepts dashes as well as slashes", () => {
+    expect(isoDate("16-09-2026")).toBe("2026-09-16")
+  })
+
+  test("rejects an impossible day or month instead of rolling it over", () => {
+    // Date.UTC would quietly turn 31 February into 2/3 March.
+    expect(isoDate("31/02/2026")).toBeNull()
+    expect(isoDate("99/99/2026")).toBeNull()
+  })
+
+  test("an ISO date is never mistaken for a day-first one", () => {
+    expect(isoDate("2026-01-12")).toBe("2026-01-12")
+  })
+})
+
+describe("isoDate - implausible dates", () => {
+  // Sites emit epoch-zero values to mean "no deadline"; Gi Group publishes
+  // validThrough: "1970-04-01". Surfacing that would mark every vacancy expired.
+  test("rejects epoch-era dates", () => {
+    expect(isoDate("1970-04-01")).toBeNull()
+    expect(isoDate("1970-01-01")).toBeNull()
+    expect(isoDate("01/01/1970")).toBeNull()
+  })
+
+  test("still accepts a plausible recent date", () => {
+    expect(isoDate("2026-09-16")).toBe("2026-09-16")
+  })
+
+  test("a rejected validThrough leaves deadline null, not wrong", () => {
+    const j = toJobPosting({
+      "@type": "JobPosting",
+      title: "X",
+      datePosted: "16/09/2026",
+      validThrough: "1970-04-01",
+    })!
+    expect(j.date).toBe("2026-09-16")
+    expect(j.deadline).toBeNull()
   })
 })
