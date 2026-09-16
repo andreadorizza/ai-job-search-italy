@@ -19,8 +19,6 @@ import re
 import unittest
 from pathlib import Path
 
-import yaml
-
 REPO = Path(__file__).resolve().parent.parent
 AGENT_SKILLS = REPO / ".agents" / "skills"
 OPT_IN_ENV = "AI_JOB_SEARCH_ALLOW_RESTRICTED"
@@ -30,15 +28,47 @@ GATE_FN = "assertRestrictedOptIn"
 VALID_RESTRICTIONS = {"robots-disallowed", "tos-prohibited", "anti-bot"}
 
 
+# Deliberately stdlib-only. CI's python-tests job installs nothing and runs a
+# bare `unittest discover`, so importing PyYAML here would make this guard skip
+# (or, as it first did, error) on every CI run - and a guard that does not run
+# in CI is not a guard. The frontmatter keys this test reads are plain scalars,
+# so a few lines of parsing beat a third-party dependency.
+_SCALAR = re.compile(r"^([A-Za-z0-9_-]+):[ \t]*(.*)$")
+
+
 def frontmatter(path: Path) -> dict:
+    """Top-level scalar keys of a file's YAML frontmatter.
+
+    Indented continuation lines (e.g. a folded `description: >` block) are
+    skipped rather than parsed - no assertion here needs them.
+    """
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
         return {}
     end = text.find("\n---", 4)
     if end == -1:
         return {}
-    data = yaml.safe_load(text[4:end])
-    return data if isinstance(data, dict) else {}
+
+    data: dict[str, object] = {}
+    for line in text[4:end].splitlines():
+        match = _SCALAR.match(line)
+        if not match:
+            continue
+        key, raw = match.group(1), match.group(2).strip()
+        if raw.startswith(("'", '"')) and len(raw) > 1 and raw[-1] == raw[0]:
+            value: object = raw[1:-1]
+        else:
+            # Strip a trailing `  # comment`, which every enabled: flag carries.
+            raw = re.split(r"\s+#", raw, maxsplit=1)[0].strip()
+            lowered = raw.lower()
+            if lowered in ("true", "false"):
+                value = lowered == "true"
+            elif lowered in ("null", "~", ""):
+                value = None
+            else:
+                value = raw
+        data[key] = value
+    return data
 
 
 def portal_skills():
