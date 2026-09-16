@@ -39,7 +39,20 @@ Do reconnaissance before writing any code. Use WebFetch (or `curl` via Bash) on 
 4. **Check access requirements and terms.**
    - Fetch `robots.txt` and check whether the search/detail paths are disallowed.
    - If the portal requires login/authentication to view listings, **stop**: this pattern only works on public pages. Tell the user and suggest checking whether the portal has an official API.
-   - If robots.txt disallows the paths or the portal's terms prohibit automated access, tell the user plainly and let them decide whether to proceed for personal use. If they proceed, the generated `SKILL.md` **must** carry a prominent personal-use-only warning (copy the tone of `linkedin-search`'s "⚠️ Personal use only" section: keep volume low, no commercial or bulk use, own responsibility).
+   - If robots.txt disallows the paths or the portal's terms prohibit automated access, tell the user plainly and let them decide whether to proceed for personal use. If they proceed, the portal is scaffolded into the **restricted tier** (below) rather than declined outright, and the generated `SKILL.md` **must** carry a prominent personal-use-only warning (copy the tone of `linkedin-search`'s "⚠️ Personal use only" section: keep volume low, no commercial or bulk use, own responsibility).
+   - **The restricted tier.** A restricted portal ships installed but gated twice over, so that neither a stray edit nor a fresh clone can turn it on by accident:
+     1. Its `SKILL.md` frontmatter declares the tier and the reason, and ships disabled:
+        ```yaml
+        enabled: false
+        access: restricted
+        restriction: robots-disallowed   # or tos-prohibited | anti-bot
+        opt-in: AI_JOB_SEARCH_ALLOW_RESTRICTED
+        ```
+     2. Its CLI refuses to run at all unless `AI_JOB_SEARCH_ALLOW_RESTRICTED=1` is set in the environment, exiting 1 with `{"error": "...", "code": "RESTRICTED_PORTAL_NOT_ENABLED"}` on stderr — the same shape as `MISSING_CREDENTIALS`. Put the check in `helpers.ts` and call it first thing in both `search` and `detail`.
+
+     `/scrape` honours the same gate independently. `tests/test_restricted_portals.py` fails the build if a restricted skill ever loses either gate, so do not hand-roll a variant.
+
+     Being in this tier is not a licence: it records that the user made a deliberate, personal, low-volume choice and can see exactly what they opted into. It also does not create access — a portal behind a bot wall may refuse to answer regardless, and if the mandatory live test in Step 4 cannot get real results **without browser impersonation**, the portal is not shipped at all.
 
 5. **Check whether the portal can be reached without a credential.** Some portals return usable content only through a third-party fetching service (a paid unlocker/proxy API). **This step never overrides Step 2.4:** if `robots.txt` or the portal's terms disallow access, that is decided there, and a paid fetching service does not change the answer. The credential path exists for portals whose `robots.txt` permits access but whose bot protection blocks ordinary fetches. Where that applies and the test fetch succeeds only through such a service, say so to the user **before scaffolding** - a portal that bills per query is a different proposition from a free one, and they may prefer to skip it. Note which service and which environment variable; the handling rules are in the portal-skill contract in Step 3.
 
