@@ -3,9 +3,9 @@ name: job-application-assistant
 description: >
   Assists with job applications: evaluating job postings, tailoring CVs, writing cover letters,
   and preparing for interviews. Triggers on keywords like: job posting, job application, CV,
-  cover letter, resume, interview prep, job fit, career, application, apply, ansøgning, stilling
+  cover letter, resume, interview prep, job fit, career, application, apply, candidatura, offerta di lavoro, lettera di presentazione, colloquio
 allowed-tools: Read, Glob, Grep, WebFetch, WebSearch, Bash, Edit, Write, AskUserQuestion
-framework_version: 1.3.4
+framework_version: 1.4.0
 ---
 
 # Job Application Assistant

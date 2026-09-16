@@ -1,5 +1,5 @@
 ---
-framework_version: 1.1.1
+framework_version: 1.2.0
 ---
 
 # Web Research and Fetching
@@ -51,7 +51,7 @@ Two details worth knowing, both covered by `tests/test_robots_check.py`:
 cd "${SCRATCHPAD:?set this to the session scratchpad directory from your system prompt}" && curl -sSL --max-time 45 -o page.html -w "HTTP %{http_code} size=%{size_download}\n" \
  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36' \
  -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' \
- -H 'Accept-Language: en-GB,en;q=0.9' \
+ -H 'Accept-Language: it-IT,it;q=0.9,en;q=0.8' \
  -H 'Accept-Encoding: gzip, deflate, br' --compressed \
  -H 'Sec-Fetch-Dest: document' -H 'Sec-Fetch-Mode: navigate' -H 'Sec-Fetch-Site: none' \
  -H 'Upgrade-Insecure-Requests: 1' \

@@ -62,6 +62,17 @@ Discover all installed portal CLI skills by reading every `SKILL.md` found under
 
 **Honor the `enabled` toggle.** A portal is enabled unless its `SKILL.md` frontmatter sets `enabled: false` (a missing key means enabled — the default). Skip each disabled portal and record it for the Step 5 summary. A fork can thus keep a portal installed but sit out a run without deleting its directory.
 
+**Honor the `access` tier.** A portal whose frontmatter sets `access: restricted`
+targets a site whose `robots.txt` or terms of service do not permit automated
+access. Skip it unless the environment variable `AI_JOB_SEARCH_ALLOW_RESTRICTED`
+is set to `1`, **regardless of its `enabled` value** — the two gates are
+independent, and a restricted portal that somehow reads `enabled: true` is still
+skipped without the opt-in. Record skipped restricted portals separately from
+merely disabled ones so the Step 5 summary can say they exist and how to enable
+them; never enable one on the user's behalf, and never suggest setting the
+variable as a fix for "no results". Its CLI enforces the same gate itself and
+exits with `RESTRICTED_PORTAL_NOT_ENABLED` if invoked without the opt-in.
+
 For each **enabled** portal skill:
 
 1. Read its `SKILL.md` to find the correct `bun run …` invocation and supported flags.
@@ -226,7 +237,10 @@ Scraper-based portal CLIs rot silently: when a portal changes its markup, the pa
 Present new jobs in a table sorted by fit (high first). When Step 1b skipped
 portals (`enabled: false`), report them with the `skipped (disabled):` line below
 so opting one out stays visible rather than silent; omit the line when nothing
-was skipped. When any portal's results came from the Step 1c fallback this run
+was skipped. Report portals skipped for `access: restricted` on their own
+`skipped (restricted):` line, naming each portal's `restriction:` reason and
+pointing at `FORK.md`, so an installed-but-gated portal is discoverable rather
+than invisible; omit that line too when nothing was skipped for this reason. When any portal's results came from the Step 1c fallback this run
 (bun unavailable, or its CLI failed at runtime), report it with the
 `fallback (websearch):` line - fallback results come from a search index that
 can be stale, so the reader should know which rows carry that caveat; omit the
