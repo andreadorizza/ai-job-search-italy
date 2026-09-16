@@ -8,6 +8,41 @@ portals, Italian CV and cover-letter conventions, Italian-language docs — and
 pulls upstream's improvements in on a regular cadence. This file is the
 contract that keeps those two jobs from fighting each other.
 
+## Two repositories, two jobs
+
+Developing the fork and running an actual job search do not belong in the same
+repository: `/setup` writes a real name, contacts and work history into tracked
+files.
+
+- **`andreadorizza/ai-job-search-italy`** — public, this repo. Portals, docs,
+  tests. No personal profile is ever committed here.
+- **`andreadorizza/ai-job-search-italy-private`** — private, seeded from this
+  one. The real job search lives there.
+
+**GitHub cannot make a fork private.** Visibility is a property of the whole
+fork network, not of one repository, so the private copy is a *separate
+repository seeded from this one* — `isFork` reads `false`, and that is correct
+rather than a mistake. `SETUP.md` §2 documents the same route for users.
+
+Remotes in the private clone:
+
+| Remote | Points at | Use |
+|---|---|---|
+| `origin` | `…-italy-private` | your work — push freely |
+| `upstream-it` | `…-italy` (this repo) | improvements — pull only |
+
+```bash
+git remote set-url --push upstream-it no_push
+```
+
+Worth doing. With both remotes present, a stray `git push upstream-it master`
+is the one realistic way a personal profile reaches the public repo, and that
+line makes it fail loudly instead of publishing.
+
+Improvements made in the private copy that other people should get are
+**cherry-picked onto a branch here** and opened as a PR. `master` never travels
+in that direction — it carries the profile.
+
 ## Setup (once per clone)
 
 ```bash
@@ -34,6 +69,15 @@ run executes pristine-template checks that this fork is supposed to fail once
 `/setup` personalises the profile. If a test complains that `CLAUDE.md` no
 longer contains `[YOUR_NAME]`, or that `cv/main_example.tex` lost its
 `\name{[First]}{[Last]}` sentinel, that is this — not a real failure.
+
+**Fork-owned tests must be stdlib-only.** CI's `python-tests` job runs a bare
+`unittest discover` across five Python versions and installs *nothing* — only
+the `lint` job does `pip install pyyaml`. A fork-owned guard that imports a
+third-party module therefore errors on every CI run, and the repo's usual
+`try/except ImportError` + `skipUnless` convention would only downgrade that
+error into a silent skip. A guard that does not run in CI is not a guard:
+parse what you need with `re` instead, as `tests/test_restricted_portals.py`
+does for YAML frontmatter.
 
 The affected classes are `tests/test_placeholder_integrity.py`
 (`TestCvSentinelsAreDataLocated`, `TestProfileSentinelIsDataLocated`) and
@@ -80,6 +124,7 @@ trailing blocks** so upstream's edits and ours rarely touch the same lines:
 | `.claude/skills/job-application-assistant/0{3,4,5,6,9}-*.md` | Danish examples replaced with Italian |
 | `.claude/skills/job-scraper/SKILL.md` | the restricted-portal skip in Step 1b |
 | `.claude/commands/add-portal.md` | the restricted-tier scaffolding outcome |
+| `salary_lookup.py`, `tools/convert_salary_excel.py` | Italian company-name, legal-form and header vocabulary |
 
 Any edit to `.claude/skills/job-application-assistant/*.md` must bump that
 file's `framework_version:` — `tools/check_framework_version.py` enforces it
@@ -266,3 +311,54 @@ skill ever loses either gate.
 Opting in is a deliberate, personal, low-volume choice, and it is the user's
 own risk to take. The flag grants permission, not access: a portal behind a
 bot wall may still refuse to answer.
+
+## Building a portal skill: traps found the hard way
+
+Found while building `eures-search` and `randstad-search`. Every one of these
+produced output that *looked* correct.
+
+**A portal that ignores your query still answers `200`.** Randstad's `?q=` was
+silently dropped and a bogus location returned the unfiltered national listing
+under a normal status code; Gi Group does the same with `?keyword=`. Silent
+widening is worse than an error, because the user reads twenty irrelevant jobs
+as "nothing matches my search". Always prove the filter took effect — Randstad
+reads the page's own canonical URL back:
+
+```ts
+export function canonicalHasLocation(canonical: string | null): boolean {
+  return canonical !== null && /\/(re|ci|pr)-[^/]+/.test(canonical)
+}
+```
+
+The mirror image: never *drop* a filter you do not recognise. `toLocationCodes()`
+passes an unknown place straight through, because dropping it would widen the
+search instead of narrowing it.
+
+**`Date.parse` reads `01/12/2026` as 12 January.** Italian portals emit
+`dd/mm/yyyy` and JavaScript reads slash formats month-first, so every date in
+the first twelve days of a month transposed silently. `isoDate()` in
+`jobposting.ts` matches `dd/mm/yyyy` explicitly, round-trips the result to
+reject impossibilities like `31/02`, and floors anything before 2000-01-01 so
+epoch garbage (`1970-04-01`) cannot surface as a real application deadline.
+
+**EURES validates the entire request body as an enum-checked schema.** Any
+missing or unexpected field returns a bare `{"key":"invalid-json"}` with no
+hint as to which one. `buildSearchBody()` therefore sends every field the API
+expects, explicitly, empty arrays included — do not trim it down.
+
+**Negative numbers are not flags.** The upstream reference parser reads
+`--page -1` as a flag named `-1` and reports `UNKNOWN_FLAG`, hiding the real
+`BAD_ARG`. Both Italian CLIs guard with `/^-\d*\.?\d+$/`; upstream's keep the
+quirk (tier 3 — not ours to change).
+
+**Widening a guard is a change to the guard.** `tests/test_scrape_contract.py`
+used to read only `helpers.ts` and `commands/search.ts`; the shared
+`jobposting.ts` extractor broke that assumption, so the scan now covers every
+`cli/src/**/*.ts` except `detail.ts`. After loosening it, prove it still bites
+by feeding it a deliberately non-compliant fixture and watching it fail.
+
+**Italian legal forms need a lookahead, not `\b`.** In `salary_lookup.py` the
+strips are written `r"\bs\.r\.l\.?(?![a-z])"`: a trailing `\b` sits between two
+non-word characters after the final dot and never matches. Italian also
+contributes **nothing** to `COMPOUND_PATTERNS` on purpose — a substring rule
+for "media" would fire inside "Intermediazione".
