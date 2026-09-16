@@ -139,3 +139,18 @@ completa (`texlive-full`), non quella minima.
 **Un portale non restituisce risultati.** Potrebbe essere ad accesso limitato e
 quindi disattivato: vedi la sezione sui portali nel
 [README](README.md).
+
+**Claude Code non mostra le skill o i comandi.** Skill e comandi vengono
+caricati dalla cartella `.claude/` della directory da cui lanci Claude Code,
+non da quella in cui ti sposti dopo. Chiudi la sessione e riaprila dalla radice
+del repository:
+
+```bash
+cd /percorso/della/tua/copia && claude
+```
+
+Attenzione: il nome del comando non coincide sempre con quello del file.
+`/scrape` arriva da `.claude/skills/job-scraper/`, perché il nome sta nel
+frontmatter di `SKILL.md` e non nel nome della cartella — un file `scrape.md`
+non esiste. Le cartelle sotto `.agents/skills/` invece non sono skill di
+Claude: sono le CLI dei portali, richiamate dalle skill con `bun run`.
