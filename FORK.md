@@ -188,7 +188,7 @@ an old row.
 | Source | robots | Listing page | Structured data | Verdict |
 |---|---|---|---|---|
 | **Randstad.it** | ALLOWED | plain `<a href>` | **full `schema.org/JobPosting`, incl. `baseSalary` (RAL) and `validThrough`** | shipped / building |
-| Gi Group | ALLOWED | plain `<a href>` | unverified — sampled page was a content page | verify markup first |
+| Gi Group | ALLOWED | plain `<a href>` | **JobPosting present** on `/offerte-lavoro-dettaglio/` pages | **blocked** — `?keyword=` is silently ignored (magazziniere, infermiere and a bogus term all return the identical 20 jobs). WordPress/Bricks; search runs through `admin-ajax.php`, which needs a per-session nonce. Not shipped: a portal whose `--query` does not filter is worse than no portal. |
 | Synergie, Umana, Openjobmetis | ALLOWED | **SPA — no links in HTML** | unknown | needs a per-site XHR endpoint |
 | Indeed.it | ALLOWED | — | detail returns **401** | restricted tier; may be unbuildable |
 | Bakeca.it | ALLOWED | serves `<title>Verifica</title>` | — | bot-check wall; restricted tier |
@@ -196,6 +196,25 @@ an old row.
 | Subito, Adecco, Monster, Manpower | 403 / disallowed | — | — | restricted tier |
 | Jobrapido | landing allowed, **search path disallowed for `*`** | — | — | restricted tier |
 | InPA | **DISALLOWED** | — | — | restricted tier; check dati.gov.it for an open-data release |
+
+#### Restricted tier: tested, and currently empty
+
+The opt-in gate exists and is guarded by `tests/test_restricted_portals.py`, but
+**no candidate is buildable within the contract today**. Measured with an honest
+User-Agent:
+
+| Candidate | Result |
+|---|---|
+| Jooble | `403` + `Just a moment...` — Cloudflare challenge |
+| Subito Lavoro | `403`, empty body |
+| Bakeca | `403` + `<title>Verifica</title>` |
+| Indeed.it | listing allowed, but vacancy pages return **`401`** |
+| Trovolavoro | fetchable (`200`), but the page serves only SEO category links — no vacancy links at all, and robots disallows it anyway |
+
+Every one of these would need browser or TLS impersonation to get past, which
+`/add-portal` bans and which no opt-in flag makes acceptable. **The flag grants
+permission, not access.** Nothing is shipped rather than shipping skills that
+cannot work; the tier is ready the moment a source becomes reachable honestly.
 
 **`schema.org/JobPosting` is the connection method for this market.** The markup
 exists so job aggregators can machine-read postings — it is what Google for Jobs
