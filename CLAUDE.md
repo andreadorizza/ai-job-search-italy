@@ -27,7 +27,7 @@ This repo is a job application workspace. Claude acts as a career advisor and ap
   undeclared language is a hard deal-breaker if a posting requires it; a declared language at a
   lower level than a posting wants is flagged for your own judgment, not auto-rejected. See
   04-job-evaluation.md's Language Gate. -->
-- **CV language:** [YOUR_CV_LANGUAGE] <!-- English unless your market expects otherwise; /setup asks -->
+- **CV language:** [YOUR_CV_LANGUAGE] <!-- Italiano for the Italian market; English is common at multinationals and in tech. /setup asks -->
 
 - **Status:** [YOUR_EMPLOYMENT_STATUS]
 - **LinkedIn headline:** "[YOUR_LINKEDIN_HEADLINE]"
@@ -130,6 +130,15 @@ After creating or updating a CV or cover letter, re-read the generated file and 
 - [ ] Cover letter is addressed to the correct person (or "Dear Hiring Manager" if unknown)
 - [ ] Cover letter fits approximately one page
 - [ ] CV section headings (`\section{...}`) and the References boilerplate line match the CV's language, not left as the English template defaults (see `05-cv-templates.md`)
+
+### Italian market (see `.claude/skills/job-application-assistant/10-mercato-italiano.md`)
+Apply these whenever the document is in Italian or the employer is Italian.
+- [ ] CV ends with the **GDPR consent line** (`Autorizzo il trattamento dei dati personali ... Regolamento UE 2016/679`) - Italian CVs read as incomplete without it
+- [ ] Salary figures are labelled **RAL** (gross annual) or **netto**, never bare, and the number of **mensilità** (13/14) is stated where known
+- [ ] Cover letter salutation and closing follow Italian convention (`Gentile ...` / `Spettabile ...`, `Cordiali saluti,`) - never `A chi di competenza`
+- [ ] Date written in Italian long form (`16 settembre 2026`), since `cover.cls` loads no babel and `\today` would render in English
+- [ ] Photo and date of birth included **only** if the candidate asked for them - common in Italy, but optional and never assumed
+- [ ] Accented characters (`è à ù ò ì é`) survive the PDF text extraction - no `(cid:*)` or `�` in the `--dump-text` output
 
 ### Compiled PDF verification (MANDATORY - never skip)
 Both documents MUST be compiled and visually inspected via the Read tool on the PDF output. "Looks fine in the .tex" is not acceptable - LaTeX page-break decisions are unpredictable. Iterate until these all pass:

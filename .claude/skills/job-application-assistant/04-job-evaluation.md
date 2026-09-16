@@ -1,5 +1,5 @@
 ---
-framework_version: 1.2.6
+framework_version: 1.3.0
 ---
 
 # Job Evaluation Framework
@@ -173,7 +173,7 @@ Present the evaluation as:
 
 ### Company Research Checklist
 - [ ] Checked company website (mission, values, recent news)
-- [ ] Checked review sites (Glassdoor, Jobindex, etc.)
+- [ ] Checked review sites (Glassdoor, Indeed, InfoJobs, etc.)
 - [ ] Checked LinkedIn for team size, recent hires, connections
 - [ ] Checked media for restructuring, growth, or workplace issues
 - [ ] Identified network contacts who may know the team/manager
@@ -249,6 +249,8 @@ consumer benefits.
 ## Pre-Application: Call the Employer (Best Practice)
 
 Before writing the application, consider whether the candidate should call the contact person listed in the posting. **Only call if there are substantive questions** - never call just to "be remembered."
+
+> **Italian market:** this is a Nordic convention and it does not transfer. In Italy an unsolicited call before applying reads as intrusive more often than as initiative, except at small firms and where the posting names a contact and invites contact. Default to not calling, and follow up by email two to three weeks after applying instead. See `10-mercato-italiano.md`.
 
 ### When to Suggest Calling
 - The posting has unclear or ambiguous requirements
