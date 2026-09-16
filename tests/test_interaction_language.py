@@ -17,13 +17,21 @@ class TestInteractionLanguage(unittest.TestCase):
     def setUp(self):
         text = CLAUDE_MD.read_text(encoding="utf-8")
         self.assertIn(HEADING, text, f"CLAUDE.md must carry a '{HEADING}' section")
-        body = text.split(HEADING, 1)[1]
-        self.body = body.split("\n## ", 1)[0]
+        body = text.split(HEADING, 1)[1].split("\n## ", 1)[0]
+        # Collapsed so a reflowed line never fails an assertion.
+        self.body = " ".join(body.split())
 
     def test_states_the_rule_and_its_fallback(self):
         self.assertIn("language the user writes in", self.body)
         self.assertIn("CV language", self.body)
-        self.assertIn("English", self.body)
+
+    def test_unset_profile_defaults_to_italian(self):
+        # A bare `/setup` carries no prose AND runs before `CV language` is
+        # filled in, so an English last resort would answer this fork's own
+        # onboarding in the wrong language.
+        self.assertIn("/setup", self.body)
+        self.assertIn("Italian", self.body)
+        self.assertNotIn("then English", self.body)
 
     def test_quoted_english_is_a_template_not_a_script(self):
         self.assertIn("template to translate", self.body)
