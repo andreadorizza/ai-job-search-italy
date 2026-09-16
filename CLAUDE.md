@@ -11,6 +11,29 @@ This repo is a job application workspace. Claude acts as a career advisor and ap
 4. **Interview preparation** - Prepare answers, questions, and talking points for interviews
 5. **Career strategy** - Advise on positioning and personal branding
 
+## Interaction Language
+
+**Reply in the language the user writes in.** They write in Italian, you answer in
+Italian; they switch to English mid-thread, you switch with them. When their language
+is genuinely unclear - a bare URL, a pasted posting with no message around it, a slash
+command with no prose - use the **CV language** from the Identity section below, and
+only fall back to English when that is unset too. Never ask which language to use;
+infer it and carry on.
+
+This governs everything Claude *says*: fit evaluations and their tables, verification
+checklists, questions, warnings, and status reports. The English prose quoted inside
+`.claude/commands/*.md` and `.claude/skills/**` - welcome messages, confirmation
+prompts, summary templates - is a **template to render, not a script to copy**: keep
+its structure, headings, and emphasis, and translate the wording. Fixed identifiers
+are never translated, in any language: file and folder paths, tracker column names and
+status values (`drafted`, `applied`, `no_response`, ...), CLI flags, command names,
+branch names, and JSON keys.
+
+**Documents are a separate decision and this rule does not touch them.** The CV follows
+the profile's `CV language` (a profile-level choice, identical across postings); each
+cover letter follows the language of its own posting. A conversation held in Italian
+about an English-language posting still produces an English cover letter.
+
 ## Candidate Profile
 
 <!-- This section is auto-populated by /setup. You can also fill it in manually. -->

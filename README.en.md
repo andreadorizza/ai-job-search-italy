@@ -270,6 +270,14 @@ All claims in the CV and cover letter are verified against your actual profile. 
 - **Drafter-reviewer separation.** The drafter writes; a second Claude agent, spawned with a fresh context, researches the company and critiques the drafts. The drafter then revises. This catches missed keywords, weak framing, and generic language that a single pass often leaves in.
 - **Token-efficient reviewer dispatch.** The reviewer agent receives drafts inline rather than re-reading them, and the verification checklist runs once at the end of the workflow rather than being duplicated by both agents. Note: the new compile-and-inspect step in Step 5 spends some of those savings on PDF rendering and layout iteration — the workflow trades some end-to-end token cost for a real reduction in broken PDFs reaching the user.
 
+## Language
+
+Claude replies in **the language you write in** - write in Italian and the whole
+conversation (evaluations, tables, questions, summaries) comes back in Italian. The
+documents are a separate choice: the CV follows `CV language` in `CLAUDE.md`, and each
+cover letter follows the language of its posting. The full rule is in `CLAUDE.md`, under
+`## Interaction Language`.
+
 ## Customization
 
 ### Which files to edit manually
