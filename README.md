@@ -167,10 +167,8 @@ portale protetto da anti-bot può comunque rifiutarsi di rispondere.
 
 ## CV e lettere in italiano
 
-Claude ti risponde **nella lingua in cui scrivi**: scrivi in italiano e la
-conversazione — valutazioni, tabelle, domande, riepiloghi — è in italiano. La
-lingua dei documenti è una scelta separata, descritta qui sotto. La regola
-completa sta in `CLAUDE.md`, sezione `## Interaction Language`.
+Claude ti risponde **nella lingua in cui scrivi** (`## Interaction Language` in
+`CLAUDE.md`). La lingua dei documenti è una scelta separata:
 
 Il CV è in **italiano** per impostazione predefinita (`CV language` in
 `CLAUDE.md`); passa all'inglese quando serve. La lettera di presentazione segue

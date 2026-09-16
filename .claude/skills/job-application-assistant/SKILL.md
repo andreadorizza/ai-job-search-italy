@@ -5,21 +5,10 @@ description: >
   and preparing for interviews. Triggers on keywords like: job posting, job application, CV,
   cover letter, resume, interview prep, job fit, career, application, apply, candidatura, offerta di lavoro, lettera di presentazione, colloquio
 allowed-tools: Read, Glob, Grep, WebFetch, WebSearch, Bash, Edit, Write, AskUserQuestion
-framework_version: 1.5.0
+framework_version: 1.4.0
 ---
 
 # Job Application Assistant
-
----
-
-## Reply Language
-
-Answer the user in the language they write in - the canonical rule, including what
-happens when their language is unclear and which identifiers stay untranslated, is
-`## Interaction Language` in `CLAUDE.md`. It governs the conversation only: the CV
-follows the profile's `CV language` (`05-cv-templates.md`) and each cover letter
-follows its posting's language (`06-cover-letter-templates.md`). Every user-facing
-message this skill quotes below is a template to translate, not a script to copy.
 
 ---
 

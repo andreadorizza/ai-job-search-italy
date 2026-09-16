@@ -4,13 +4,6 @@ You are running the onboarding setup for the AI Job Search framework. Your goal 
 
 There are three paths into setup. Step 0 picks the right one; all three converge on Step 3 (file generation) and Step 4 (confirmation).
 
-Every prompt, question, and summary quoted below is written in English as a **template**.
-Render it in the language the user writes in, per `## Interaction Language` in `CLAUDE.md` -
-setup is usually a user's first contact with this framework, and it is the one command that
-runs before the profile exists, so infer the language from their own messages rather than
-from the profile. The `CV language` question in the search section is unaffected: it sets the
-language of the documents, not of the conversation.
-
 ---
 
 ## Step 0: Welcome & Choose Path

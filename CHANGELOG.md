@@ -15,19 +15,6 @@ per-file diff commands.
 
 ### Added
 
-- **Reply in the user's language** (`CLAUDE.md`, `AGENTS.md`,
-  `.claude/skills/job-application-assistant/SKILL.md`, `.claude/commands/setup.md`,
-  `README.md`, `README.en.md`, `tests/test_interaction_language.py`) - a canonical
-  `## Interaction Language` section in `CLAUDE.md` tells every runtime to answer in the
-  language the user writes in, falling back to the profile's `CV language` and then to
-  English when a turn carries no prose to infer from. The English prose quoted throughout
-  `.claude/` is declared a template to render, not a script to copy, with file paths,
-  tracker status values (`drafted`, `applied`, `no_response`, ...), CLI flags, and JSON
-  keys excluded from translation. Document language is untouched: the CV still follows
-  the profile-level `CV language` and each cover letter still follows its posting's
-  language. Without this, an Italian user got an English conversation because the
-  framework's own prompts are written in English.
-
 - **`documents/projects/` portfolio ingestion in `/setup` (Path A)** (`documents/README.md`,
   `.claude/commands/setup.md`, `.claude/commands/reset.md`, `tests/test_setup_command.py`) -
   onboards project writeups, case studies, and documentation (`.md`, `.txt`, `.pdf`)
