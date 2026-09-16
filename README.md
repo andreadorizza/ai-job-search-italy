@@ -6,6 +6,18 @@
 
 *The job search that runs on your machine.*
 
+> ### 🇮🇹 Fork italiano
+>
+> Questo è un fork di [MadsLorentzen/ai-job-search](https://github.com/MadsLorentzen/ai-job-search)
+> adattato al mercato del lavoro italiano: portali italiani, CV e lettere di
+> presentazione secondo le convenzioni italiane, documentazione in italiano.
+>
+> **👉 [Leggi il README in italiano](README.it.md)** · [Guida all'installazione](SETUP.it.md)
+>
+> Questo README resta in inglese e allineato all'upstream, così gli aggiornamenti
+> si integrano senza conflitti. Vedi [`FORK.md`](FORK.md) per come è mantenuto il fork.
+
+
 <p align="center">
   <a href="https://trendshift.io/repositories/43622?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-43622" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/43622/daily" alt="MadsLorentzen%2Fai-job-search | Trendshift" width="250" height="55"/></a>
 </p>
