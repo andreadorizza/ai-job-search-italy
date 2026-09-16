@@ -50,7 +50,7 @@ Upstream has no say in these. On a conflict, take our side wholesale.
 | Path | Why |
 |---|---|
 | `FORK.md` | this file |
-| `README.it.md`, `SETUP.it.md` | Italian-language docs; no upstream counterpart |
+| `README.md`, `SETUP.md` | **Italian**, and the repo's landing page — GitHub only auto-renders `README.md` |
 | `CLAUDE.md` | the candidate profile |
 | `.claude/skills/job-application-assistant/10-mercato-italiano.md` | Italian market conventions; new file |
 | `.agents/skills/{eures,randstad,gigroup,...}-search/` | Italian portal skills |
@@ -88,12 +88,25 @@ locally (the CI job is upstream-only).
 
 Everything else: all of `tools/` except `salary_lookup.py` and
 `tools/convert_salary_excel.py`, all of `tests/` except the host list, both
-workflows, `cover_letters/cover.cls`, `AGENTS.md`, `README.md`, `SETUP.md`.
+workflows, `cover_letters/cover.cls`, `AGENTS.md`, `README.en.md`, `SETUP.en.md`.
 
-`README.md` and `SETUP.md` stay English and stay structurally upstream's. The
-Italian versions are separate files, because `tests/test_onboarding_privacy.py`
-pins English literals inside their "Fork and clone" sections — translating
-those files in place means either mangling the Italian or forking a test.
+**The Italian docs are the primary ones.** `README.md` and `SETUP.md` are
+Italian, because GitHub only auto-renders `README.md` and this fork's audience
+reads Italian. Upstream's English wording lives on in `README.en.md` and
+`SETUP.en.md`, which stay structurally upstream's.
+
+`tests/test_onboarding_privacy.py` pins the public-fork warning next to the
+fork command. Its English assertions could not simply be pointed at the Italian
+files — "pubblico" does not match `/public/i` (Italian doubles the b: `pubb`
+against `publ`), "dati personali" is not the case-sensitive "personal data",
+and "sezione 8" is not "section 8". Satisfying them would have meant splicing
+English fragments into Italian prose to please a grep. Instead the English
+assertions moved to the `.en.md` copies and the Italian files got their own
+equivalent checks, so the guarantee holds in both languages.
+
+**Merge consequence:** `README.md` and `SETUP.md` are now fork-owned, so every
+upstream edit to those paths conflicts. Resolution is mechanical — keep ours,
+and port anything worth having into the `.en.md` copies.
 
 ## Anchors that must survive translation
 
@@ -122,6 +135,23 @@ strings themselves.
 - `-enc UTF-8` on every line that runs `pdftotext -layout`.
 - Every `.claude/commands/*.md` starts `# /<name>` — `# /setup - Onboarding` is
   fine, `# Onboarding` is not.
+
+## GitHub Actions on this fork
+
+Workflows are gated **twice** on a forked repository, and only one of the gates
+is in Settings. Setting *Settings → Actions → General → Allow all actions and
+reusable workflows* is necessary but not sufficient: GitHub also disables
+workflows on forks behind a banner that lives on the **Actions tab** itself
+("I understand my workflows, go ahead and enable them"). There is no equivalent
+switch under Settings.
+
+Symptom when only the Settings gate is set: `.github/workflows/ci.yml` and
+`upstream-watch.yml` are present on the default branch, but the API reports
+**0 workflows registered and 0 runs** — GitHub has never parsed them. Nothing is
+wrong with the workflow files; click the banner on the Actions tab.
+
+Until that is done there is no CI, and the weekly **Upstream sync watch** issue
+never fires, so `tools/upstream_triage.py` has to be run by hand.
 
 ## Pulling upstream in
 
@@ -157,7 +187,7 @@ before acting on an old entry — portals change.
 | **InfoJobs Italia** | **CLOSED — permanently** | Ceased operations **31 December 2025**; all user accounts and data deleted 1 January 2026 ([official notice](https://assistenza.infojobs.it/hc/it/articles/23116648861084-CHIUSURA-INFOJOBS-ITALIA)). Adevinta withdrew from the Italian market. There is nothing left to integrate — do not re-investigate the `api.infojobs.net` route, it served the Spanish business. |
 | **Talent.com** | viable, not built | robots-allowed, returns real Italian results. But its `ld+json` carries only vacancy URLs (an `ItemList` of `WebPage`), so titles/companies need regex over ~660 KB of markup — a fragile scraper, worth doing only if broader coverage is wanted. |
 | **Company ATS boards** | viable, needs board tokens | `boards-api.greenhouse.io/v1/boards/<token>/jobs` and `api.lever.co/v0/postings/<company>?mode=json` are public, unauthenticated JSON and verified working (Greenhouse returned 647 real jobs for a known board). The blocker is discovery: board tokens are per-company slugs and cannot be guessed — eight plausible Italian tokens all 404'd. Needs tokens read off each company's careers page, or a user-supplied list. |
-| InPA, Jobrapido, Subito, Monster, Indeed | restricted tier | See the access table in the README and the tier rules below. No open-source scraper is reusable for any of them: the Subito projects target classifieds rather than Lavoro, and the InPA ones are commercial Apify actors. |
+| InPA, Jobrapido, Subito, Monster, Indeed | restricted tier | See the access map above and the tier rules below. No open-source scraper is reusable for any of them: the Subito projects target classifieds rather than Lavoro, and the InPA ones are commercial Apify actors. |
 
 ### SPID is permanently out of scope
 

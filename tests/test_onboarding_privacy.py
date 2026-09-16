@@ -8,14 +8,23 @@ the decision it should inform. A real user hit exactly this. These tests
 pin that the warning lives at the point of decision (adjacent to both
 fork commands) and that /setup checks the origin's visibility BEFORE
 writing anything, not in its closing notes.
+
+This fork serves Italian docs as README.md/SETUP.md and keeps upstream's
+English wording in README.en.md/SETUP.en.md, so the guarantee is checked
+twice - once per language. See TestItalianForkWarningsAtTheDecisionPoint
+for why the English assertions cannot simply be repointed.
 """
 import re
 import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-README = REPO / "README.md"
-SETUP_GUIDE = REPO / "SETUP.md"
+# This fork's landing page is Italian (GitHub only auto-renders README.md), and
+# upstream's English wording lives alongside it in the .en.md copies.
+README_IT = REPO / "README.md"
+SETUP_GUIDE_IT = REPO / "SETUP.md"
+README = REPO / "README.en.md"
+SETUP_GUIDE = REPO / "SETUP.en.md"
 SETUP_COMMAND = REPO / ".claude" / "commands" / "setup.md"
 
 
@@ -50,12 +59,54 @@ class TestForkWarningsAtTheDecisionPoint(unittest.TestCase):
     def test_readme_quick_start_warns_next_to_the_fork_command(self):
         body = section(README.read_text(encoding="utf-8"), "### 1. Fork and clone")
         self.assertIn("gh repo fork", body, "sanity: the fork command lives in this section")
-        self.assert_warns(body, "README")
+        self.assert_warns(body, "README.en.md")
 
     def test_setup_guide_warns_next_to_the_fork_command(self):
         body = section(SETUP_GUIDE.read_text(encoding="utf-8"), "## 2. Fork and clone")
         self.assertIn("gh repo fork", body, "sanity: the fork command lives in this section")
-        self.assert_warns(body, "SETUP.md")
+        self.assert_warns(body, "SETUP.en.md")
+
+
+class TestItalianForkWarningsAtTheDecisionPoint(unittest.TestCase):
+    """The same guarantee, in the language a reader of this fork actually lands on.
+
+    The English assertions above cannot simply be pointed at the Italian files:
+    "pubblico" does not match /public/i (Italian doubles the b - "pubb" against
+    "publ"), "dati personali" is not the case-sensitive "personal data", and
+    "sezione 8" is not "section 8". Satisfying the English regexes would mean
+    splicing English fragments into Italian prose to please a grep, so the
+    Italian docs get their own checks on the same three facts instead.
+    """
+
+    def assert_warns_it(self, body: str, where: str):
+        self.assertRegex(
+            body,
+            re.compile(r"pubblic", re.IGNORECASE),
+            f"{where}: la sezione fork deve dire che il fork è pubblico",
+        )
+        self.assertRegex(
+            body,
+            # Tolerates the phrase being split by markdown wrapping, including a
+            # blockquote continuation ("**dati\n> personali**"). Pinning the
+            # contiguous literal would break on the next harmless reflow.
+            re.compile(r"dati\s*>?\s*personali", re.IGNORECASE),
+            f"{where}: la sezione fork deve dire che /setup scrive dati personali",
+        )
+        self.assertRegex(
+            body,
+            re.compile(r"sezione 8|#8-aggiornamenti", re.IGNORECASE),
+            f"{where}: la sezione fork deve rimandare alla sezione 8 di SETUP.md",
+        )
+
+    def test_italian_readme_warns_next_to_the_fork_command(self):
+        body = section(README_IT.read_text(encoding="utf-8"), "### 1. Fork e clone")
+        self.assertIn("gh repo fork", body, "sanity: the fork command lives in this section")
+        self.assert_warns_it(body, "README.md")
+
+    def test_italian_setup_guide_warns_next_to_the_fork_command(self):
+        body = section(SETUP_GUIDE_IT.read_text(encoding="utf-8"), "## 2. Ottenere una copia")
+        self.assertIn("gh repo fork", body, "sanity: the fork command lives in this section")
+        self.assert_warns_it(body, "SETUP.md")
 
 
 class TestSetupChecksOriginBeforeWriting(unittest.TestCase):
