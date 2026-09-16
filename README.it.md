@@ -85,12 +85,21 @@ da solo: non c'è nessun registro da aggiornare.
 - **LinkedIn** — endpoint pubblici `jobs-guest`, nessuna dipendenza, funziona
   con qualsiasi città (`-l "Milano, Italy"`). Solo uso personale.
 - **freehire** — aggregatore tech con API REST pubblica, risultati strutturati.
+- **EURES** — il portale ufficiale della Commissione Europea. API pubblica, senza
+  credenziali, copre l'Italia e tutta l'UE. Filtra per regione italiana per nome
+  (`-l "Lombardia,Veneto"`) o per codice NUTS.
+
+  Due cose da sapere: i titoli sono etichette ESCO, non il titolo scelto
+  dall'azienda, e a volte c'entrano poco con il ruolo reale — leggi sempre la
+  descrizione. E molti annunci arrivano da agenzie per il lavoro, quindi il
+  campo azienda spesso riporta l'agenzia. In compenso le descrizioni italiane
+  indicano quasi sempre CCNL e RAL.
 
 ### In arrivo per l'Italia
 
-EURES (l'API pubblica dell'UE), ClicLavoro, Adzuna Italia, Talent.com, gli ATS
-aziendali (Greenhouse, Lever, Workday) e — se l'API ufficiale copre l'Italia —
-InfoJobs. Lo stato aggiornato è in [`FORK.md`](FORK.md).
+ClicLavoro, Adzuna Italia, Talent.com, gli ATS aziendali (Greenhouse, Lever,
+Workday) e — se l'API ufficiale copre l'Italia — InfoJobs. Lo stato aggiornato
+è in [`FORK.md`](FORK.md).
 
 ### Portali ad accesso limitato
 
