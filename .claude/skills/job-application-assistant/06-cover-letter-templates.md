@@ -20,6 +20,8 @@ cd cover_letters && xelatex -interaction=nonstopmode cover_<company>_<role>.tex
 
 Expected output: `Output written on cover_<company>_<role>.pdf (1 page, ...)`. Any page count other than 1 is a failure that must be fixed before presenting to the user.
 
+**Without a TeX distribution:** `cd cover_letters && tectonic -X compile cover_<company>_<role>.tex` also works. Tectonic runs XeTeX and loads the bundled fonts through `fontspec` the same way. See `05-cv-templates.md` for installing it and checking page counts.
+
 ## Compile-and-Inspect Loop (MANDATORY)
 
 After writing the cover letter and before presenting to the user, always compile and visually inspect the PDF. Iterate until the layout is clean:
