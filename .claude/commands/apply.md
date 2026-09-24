@@ -239,6 +239,7 @@ cd ../cover_letters && xelatex -interaction=nonstopmode cover_<company>_<role>.t
 
 - **Stock CV** uses **lualatex** — pdflatex fails on modern MiKTeX with fontawesome5 font-expansion errors. lualatex handles the same sources cleanly.
 - **Stock cover letter** uses **xelatex** — cover.cls requires fontspec.
+- **No TeX distribution, but Tectonic installed** (`tectonic --version`): compile both with `tectonic -X compile <file>.tex` instead; it runs XeTeX and handles both stock templates. It does not print a page count, so read it from `tools/verify_pdf.py` in Step 5d. See `05-cv-templates.md`.
 - **Custom template active:** run its declared `<CV_COMPILE>`/`<COVER_COMPILE>` command instead, substituting the actual filename for `<file>`. Never fall back to lualatex/xelatex when a custom template's compile command is a different toolchain (e.g. `typst compile`) — that command is what the manifest actually verified in `/add-template` Step 4.
 
 If either compile fails, fix the error and re-compile until clean.

@@ -22,6 +22,15 @@ cd cv && lualatex -interaction=nonstopmode main_<company>_<role>.tex
 
 Expected output: `Output written on main_<company>_<role>.pdf (2 pages, ...)`. Any page count other than 2 is a failure that must be fixed before presenting to the user.
 
+**Lightweight alternative: [Tectonic](https://tectonic-typesetting.github.io).** A ~20 MB self-contained engine (`brew install tectonic`, or the installer for Linux/Windows) that downloads only the packages a document uses, with no admin rights. It runs XeTeX, which compiles both the stock CV and `cover.cls` cleanly (verified on `cv/main_example.tex` and `cover_letters/cover_example.tex`: 2 pages and 1 page). Use it when a full TeX Live/MacTeX install (4-5 GB) is not wanted:
+
+```bash
+cd cv && tectonic -X compile main_<company>_<role>.tex
+cd cover_letters && tectonic -X compile cover_<company>_<role>.tex
+```
+
+Tectonic prints `Writing ... .pdf`, not a page count, so check pages with `python tools/verify_pdf.py <pdf> --pages 2` (or `--pages 1`). A Tectonic build satisfies the checklist's lualatex/xelatex items. Warnings about FontAwesome `ToUnicode CMap` are harmless: they affect only the icon glyphs, and the contact details stay literal text.
+
 ## Document Structure
 
 ```latex

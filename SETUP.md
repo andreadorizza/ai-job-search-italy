@@ -11,11 +11,15 @@ all'upstream ed è il riferimento in caso di dubbio.
 | Piano a pagamento o crediti API | Claude Code non funziona sul piano gratuito | — |
 | [Bun](https://bun.sh) | esegue i client dei portali | `bun --version` |
 | Python 3.10+ | strumenti di verifica PDF e manutenzione | `python3 --version` |
-| LaTeX (`lualatex` + `xelatex`) | compila CV e lettere | `lualatex --version` |
+| LaTeX (`lualatex` + `xelatex`), oppure [Tectonic](https://tectonic-typesetting.github.io) | compila CV e lettere | `lualatex --version` o `tectonic --version` |
 | [GitHub CLI](https://cli.github.com) | opzionale, per fork e issue | `gh --version` |
 
 Su macOS: `brew install bun python@3.12 gh` e MacTeX per LaTeX.
 Su Debian/Ubuntu: `apt install python3 texlive-full` e Bun dallo script ufficiale.
+
+**LaTeX leggero:** MacTeX e `texlive-full` occupano 4–5 GB. In alternativa
+`brew install tectonic` (circa 20 MB, senza permessi di amministratore):
+scarica solo i pacchetti che servono e compila sia il CV sia le lettere.
 
 ## 2. Ottenere una copia
 
@@ -95,6 +99,9 @@ passaggio viene semplicemente saltato.
 ```bash
 lualatex cv/main_example.tex
 xelatex  cover_letters/cover_example.tex
+# oppure, con Tectonic:
+# (cd cv && tectonic -X compile main_example.tex)
+# (cd cover_letters && tectonic -X compile cover_example.tex)
 python3 tools/verify_pdf.py cv/main_example.pdf --dump-text /tmp/cv.txt
 ```
 
@@ -134,7 +141,8 @@ partono dal presupposto di girare sul repository originale. Vedi
 [`FORK.md`](FORK.md).
 
 **`lualatex` non trova `fontawesome5`.** Installa la distribuzione LaTeX
-completa (`texlive-full`), non quella minima.
+completa (`texlive-full`), non quella minima, oppure usa Tectonic, che scarica
+da solo i pacchetti mancanti.
 
 **Un portale non restituisce risultati.** Potrebbe essere ad accesso limitato e
 quindi disattivato: vedi la sezione sui portali nel
