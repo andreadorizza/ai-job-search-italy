@@ -99,7 +99,7 @@ Upstream has no say in these. On a conflict, take our side wholesale.
 | `.claude/skills/job-application-assistant/10-mercato-italiano.md` | Italian market conventions; new file |
 | `.agents/skills/{eures,randstad,gigroup,...}-search/` | Italian portal skills |
 | `.agents/skills/{indeed,jobrapido,subito,monster}-search/` | restricted-tier portals |
-| `.agents/skills/{eighty-thousand-hours,remoteimpact,uncareers,infocooperazione,reliefweb}-search/` | impact-sector portals; ship `enabled: false` |
+| `.agents/skills/{eighty-thousand-hours,remoteimpact,uncareers,infocooperazione,reliefweb,impactjobs}-search/` | impact-sector portals; ship `enabled: false` |
 | `tests/test_restricted_portals.py` | guards the restricted tier; new file |
 | `tests/test_interaction_language.py` | pins CLAUDE.md's reply-language rule; new file |
 | `templates/` | templates registered via `/add-template` |
@@ -337,6 +337,7 @@ before acting on an old entry — portals change.
 | **UN Careers** | **shipped, disabled** | Public list API `api/public/opening/jo/list/filteredV2`. Never call the per-job endpoint: it bumps the posting's view count. Secretariat only (not UNDP/UNICEF/UNHCR/WFP). |
 | **Info Cooperazione** | **shipped, disabled** | Server-rendered HTML, no robots.txt, no terms page; content CC BY-NC-SA 4.0 - attribution kept on every result. |
 | **ReliefWeb** | **shipped, disabled, untested live** | Official API needs a pre-approved `appname` since Nov 2025 (`RELIEFWEB_APPNAME`). API-host robots.txt is `Disallow: /`; treated as open because the API docs invite programmatic use. Re-run the live test once an appname exists. |
+| **Impact Jobs** | **shipped, disabled** | impactjobs.org (JBoard). Parses the page's `window.jobsList` JSON; robots `Disallow: /rss/`, `Crawl-delay: 1` (honoured across runs); no terms on the site. ~650 remote jobs, mostly US; filter ids are board-specific, so the CLI fails with `FILTERS_CHANGED` if they drift. theimpactjob.com runs the same platform. |
 | Idealist | declined | Terms I.d (j)(k) forbid bots and scraping; API only under a separate agreement. |
 | Impactpool, Probably Good, Escape the City, data.org, Job4Good | not built | Technically reachable, but their terms forbid automated access. Ask for permission, or restricted tier. |
 | Tech Jobs for Good, Climatebase, Devex | unreachable | Cloudflare JS challenge on every path. UNjobs.org: robots `Disallow: /`. |

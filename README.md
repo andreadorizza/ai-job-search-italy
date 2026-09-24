@@ -146,7 +146,7 @@ da solo: non c'è nessun registro da aggiornare.
 
 ### Settore non profit e ad impatto (disattivati di default)
 
-Cinque portali per chi cerca lavoro in ONG, organizzazioni internazionali e
+Sei portali per chi cerca lavoro in ONG, organizzazioni internazionali e
 imprese sociali. Sono installati ma **spenti**: per usarli imposta
 `enabled: true` nel frontmatter del loro `SKILL.md`.
 
@@ -161,6 +161,9 @@ imprese sociali. Sono installati ma **spenti**: per usarli imposta
 - **Info Cooperazione** (`infocooperazione-search`) — la bacheca italiana della
   cooperazione internazionale. Contenuti in licenza CC BY-NC-SA 4.0: ogni
   risultato riporta la fonte.
+- **Impact Jobs** (`impactjobs-search`) — circa 650 lavori da remoto nel settore
+  ad impatto (`--remote`). Soprattutto USA e pochi ruoli tech: allarga
+  `--jobage` a 30–60 giorni.
 - **ReliefWeb** (`reliefweb-search`) — lavoro umanitario e ONG (UN OCHA).
   Richiede un `appname` approvato da ReliefWeb (gratuito): richiedilo, poi
   esporta `RELIEFWEB_APPNAME`.
