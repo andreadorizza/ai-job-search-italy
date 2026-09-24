@@ -19,7 +19,12 @@ italiane, e documentazione in italiano. Il
 > Progetto open source indipendente, **non** affiliato ad Anthropic. Claude Code
 > è citato solo per descrivere gli strumenti usati. Nessuna criptovaluta, nessun
 > token, nessuna sponsorizzazione a pagamento: chi sostiene il contrario sta
-> tentando una truffa.
+> tentando una truffa. Gli unici modi per sostenere il progetto sono i link
+> Ko-fi di questo README e i contributi su GitHub.
+
+<a href="https://ko-fi.com/andreadorizza">
+  <img src="https://img.shields.io/badge/Ko--fi-Offrimi%20un%20caff%C3%A8-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Offrimi un caffè su Ko-fi" height="28">
+</a>
 
 ## Cosa serve
 
@@ -194,6 +199,22 @@ ricevono tutti i fork, non solo questo.
 
 Per capire come è organizzato il fork e come si integrano gli aggiornamenti
 dall'upstream, leggi [`FORK.md`](FORK.md).
+
+## Sostieni il progetto
+
+Il fork è gratuito e lo resterà: non c'è una versione a pagamento e nessuna
+funzione è riservata a chi dona.
+
+Se ti ha fatto risparmiare una domenica di lettere di presentazione, un caffè
+è ben accetto e del tutto facoltativo. Non compra niente: né accesso anticipato,
+né una versione per sostenitori, né funzioni extra.
+
+<a href="https://ko-fi.com/andreadorizza">
+  <img src="https://img.shields.io/badge/Ko--fi-Offrimi%20un%20caff%C3%A8-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Offrimi un caffè su Ko-fi" height="28">
+</a>
+
+Il motore è di Mads Lorentzen: se vuoi sostenere anche l'upstream, il suo
+Ko-fi è [ko-fi.com/madslorentzen](https://ko-fi.com/madslorentzen).
 
 ## Licenza
 
