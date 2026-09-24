@@ -1,2 +1,6 @@
+# Fork-owned (see FORK.md): the Sponsor button on this repository's page.
+# The Italian fork's Ko-fi comes first; upstream's author stays listed, since
+# the engine is theirs.
+ko_fi: andreadorizza
 github: MadsLorentzen
-ko_fi: madslorentzen
+custom: ["https://ko-fi.com/madslorentzen"]

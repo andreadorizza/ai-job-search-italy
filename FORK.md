@@ -103,6 +103,7 @@ Upstream has no say in these. On a conflict, take our side wholesale.
 | `tests/test_restricted_portals.py` | guards the restricted tier; new file |
 | `tests/test_interaction_language.py` | pins CLAUDE.md's reply-language rule; new file |
 | `templates/` | templates registered via `/add-template` |
+| `.github/FUNDING.yml` | the Sponsor button: this fork's Ko-fi first, upstream's author kept |
 
 ### 2. Shared — merge carefully
 
