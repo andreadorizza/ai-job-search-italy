@@ -48,6 +48,44 @@ neither unless the posting or the sector expects it (public sector and
 traditional SMEs more often do; tech and multinationals generally do not).
 If a photo is included, it belongs top-right, professional, head-and-shoulders.
 
+Record the answer once, during `/setup`, as a `CV photo: yes` or `CV photo: no`
+line in CLAUDE.md's Identity section, so `/apply` does not ask again for every
+application.
+
+**The stock template cannot show a photo as it stands.** moderncv's `banking`
+style silently ignores `\photo`: the CV compiles and no photo appears (verified
+2026-09-24). When the profile says `CV photo: yes`:
+
+- Switch that CV to `\moderncvstyle{classic}` and add
+  `\photo[64pt][0.4pt]{<file>}` next to `\email{...}`. The photo renders
+  top-right. Classic puts the dates in a left-hand column and needs noticeably
+  more space than banking, so expect to cut content to stay at 2 pages. Re-run
+  `/apply` Step 5 in full.
+- Or register a template that has a photo slot with `/add-template`.
+
+Keep the photo file out of git: store it under `cv/` with a `main_*` name or
+another ignored path, never at the repo root.
+
+## One column or two
+
+Two-column CVs (a coloured sidebar with contacts, skills and languages) are
+common in Italy. Canva-style designs and many Europass-derived layouts use them,
+and some recruiters expect that look.
+
+They are also what ATS parsers most often scramble: sidebar text gets
+interleaved with the main column, so job titles and dates end up next to the
+wrong entries. The stock template is single-column on purpose.
+
+- **Default:** keep the single-column template. It is the safer choice for any
+  employer that screens with an ATS, as many mid-size and large Italian
+  companies and staffing agencies (*agenzie per il lavoro*) do.
+- **If the candidate wants two columns:** register the design with
+  `/add-template`, and treat `/apply` Step 5d's reading-order check as
+  mandatory. If the extracted text interleaves the columns, tell the candidate
+  plainly that the layout trades ATS parsing for looks, and let them choose.
+- `\moderncvstyle{classic}` is a middle ground: dates sit in a left-hand column,
+  but the text flows as one column and extracts in the right order.
+
 ## Salary: RAL, netto, and the CCNL
 
 Italian salary talk has three separate numbers, and mixing them up is a real
