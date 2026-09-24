@@ -100,7 +100,7 @@ Also read the most recent existing CV and cover letter files for concrete struct
 *In both filenames below, `<company>_<role>` is derived by the **Subfolder naming** rule in `documents/README.md` — the same rule `/outcome` Step 1.4 uses for the archive folder, so a `/` or other path character in a company or role name can never split the filename across directories.*
 
 ### CV (`cv/main_<company>_<role><CV_EXT>`)
-- In the **CV language from the profile** (the `CV language:` line in CLAUDE.md's Identity section). When the profile does not set one, default to **English**. Never switch language per posting - the CV language is a profile-level choice, so all CVs stay consistent and reusable
+- In the **CV language from the profile** (the `CV language:` line in CLAUDE.md's Identity section). When the profile does not set one, default to **English**. Do not switch language per posting on your own - the CV language is a profile-level choice, so all CVs stay consistent and reusable. **One exception:** when the `CV language:` line says `match the posting` (e.g. `match the posting - Italiano for Italian-language postings, English for all others`), write the CV in the language the line maps the posting's language to (the posting language detected in Step 1), and apply that language's heading and convention rules from `05-cv-templates.md` / `10-mercato-italiano.md`
 - Follow the moderncv/banking format from `05-cv-templates.md`
 - Tailor the profile statement and experience bullets to the specific role
 - Reframe skills and achievements to match job requirements
@@ -239,6 +239,7 @@ cd ../cover_letters && xelatex -interaction=nonstopmode cover_<company>_<role>.t
 
 - **Stock CV** uses **lualatex** — pdflatex fails on modern MiKTeX with fontawesome5 font-expansion errors. lualatex handles the same sources cleanly.
 - **Stock cover letter** uses **xelatex** — cover.cls requires fontspec.
+- **No TeX distribution, but Tectonic installed** (`tectonic --version`): compile both with `tectonic -X compile <file>.tex` instead; it runs XeTeX and handles both stock templates. It does not print a page count, so read it from `tools/verify_pdf.py` in Step 5d. See `05-cv-templates.md`.
 - **Custom template active:** run its declared `<CV_COMPILE>`/`<COVER_COMPILE>` command instead, substituting the actual filename for `<file>`. Never fall back to lualatex/xelatex when a custom template's compile command is a different toolchain (e.g. `typst compile`) — that command is what the manifest actually verified in `/add-template` Step 4.
 
 If either compile fails, fix the error and re-compile until clean.

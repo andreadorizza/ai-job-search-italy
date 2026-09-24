@@ -149,6 +149,34 @@ da solo: non c'è nessun registro da aggiornare.
   finale — è il funzionamento normale di un'agenzia. Il settore e il comune
   sono nella descrizione.
 
+### Settore non profit e ad impatto (disattivati di default)
+
+Sei portali per chi cerca lavoro in ONG, organizzazioni internazionali e
+imprese sociali. Sono installati ma **spenti**: per usarli imposta
+`enabled: true` nel frontmatter del loro `SKILL.md`.
+
+- **80,000 Hours** (`eighty-thousand-hours-search`) — job board ad alto impatto
+  (AI safety, salute globale, policy). Molti ruoli da remoto. Contiene solo una
+  sintesi dell'annuncio: il testo completo è al link del datore di lavoro.
+- **Remote Impact** (`remoteimpact-search`) — solo lavori da remoto nel settore
+  ad impatto. Legge il feed RSS pubblico: ogni feed ha gli ultimi 50 annunci,
+  quindi conviene lanciarlo spesso e filtrare per categoria (`-c ai-safety`).
+- **UN Careers** (`uncareers-search`) — le posizioni del Segretariato ONU,
+  incluse le consulenze da remoto (`--category consultant --home-based`).
+- **Info Cooperazione** (`infocooperazione-search`) — la bacheca italiana della
+  cooperazione internazionale. Contenuti in licenza CC BY-NC-SA 4.0: ogni
+  risultato riporta la fonte.
+- **Impact Jobs** (`impactjobs-search`) — circa 650 lavori da remoto nel settore
+  ad impatto (`--remote`). Soprattutto USA e pochi ruoli tech: allarga
+  `--jobage` a 30–60 giorni.
+- **ReliefWeb** (`reliefweb-search`) — lavoro umanitario e ONG (UN OCHA).
+  Richiede un `appname` approvato da ReliefWeb (gratuito): richiedilo, poi
+  esporta `RELIEFWEB_APPNAME`.
+
+Idealist, Impactpool, Probably Good ed Escape the City vietano l'accesso
+automatico nei termini d'uso e non sono inclusi. I dettagli sono in
+[`FORK.md`](FORK.md).
+
 ### In arrivo per l'Italia
 
 **InfoJobs non c'è più**: ha chiuso il 31 dicembre 2025 e ha cancellato tutti i

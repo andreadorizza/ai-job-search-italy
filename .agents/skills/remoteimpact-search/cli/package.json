@@ -1,0 +1,20 @@
+{
+  "name": "remoteimpact-cli",
+  "version": "1.0.0",
+  "description": "CLI for Remote Impact (remoteimpact.org) — remote jobs at climate, AI-safety, global-health and other impact organisations. Reads the board's public RSS feeds; no account, zero runtime dependencies.",
+  "type": "module",
+  "main": "src/cli.ts",
+  "bin": {
+    "remoteimpact-search": "src/cli.ts"
+  },
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test --timeout 30000",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/bun": "1.3.14"
+  }
+}
