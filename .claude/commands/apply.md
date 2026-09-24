@@ -100,7 +100,7 @@ Also read the most recent existing CV and cover letter files for concrete struct
 *In both filenames below, `<company>_<role>` is derived by the **Subfolder naming** rule in `documents/README.md` — the same rule `/outcome` Step 1.4 uses for the archive folder, so a `/` or other path character in a company or role name can never split the filename across directories.*
 
 ### CV (`cv/main_<company>_<role><CV_EXT>`)
-- In the **CV language from the profile** (the `CV language:` line in CLAUDE.md's Identity section). When the profile does not set one, default to **English**. Never switch language per posting - the CV language is a profile-level choice, so all CVs stay consistent and reusable
+- In the **CV language from the profile** (the `CV language:` line in CLAUDE.md's Identity section). When the profile does not set one, default to **English**. Do not switch language per posting on your own - the CV language is a profile-level choice, so all CVs stay consistent and reusable. **One exception:** when the `CV language:` line says `match the posting` (e.g. `match the posting - Italiano for Italian-language postings, English for all others`), write the CV in the language the line maps the posting's language to (the posting language detected in Step 1), and apply that language's heading and convention rules from `05-cv-templates.md` / `10-mercato-italiano.md`
 - Follow the moderncv/banking format from `05-cv-templates.md`
 - Tailor the profile statement and experience bullets to the specific role
 - Reframe skills and achievements to match job requirements
