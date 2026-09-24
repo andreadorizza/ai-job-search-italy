@@ -99,6 +99,7 @@ Upstream has no say in these. On a conflict, take our side wholesale.
 | `.claude/skills/job-application-assistant/10-mercato-italiano.md` | Italian market conventions; new file |
 | `.agents/skills/{eures,randstad,gigroup,...}-search/` | Italian portal skills |
 | `.agents/skills/{indeed,jobrapido,subito,monster}-search/` | restricted-tier portals |
+| `.agents/skills/{eighty-thousand-hours,remoteimpact,uncareers,infocooperazione,reliefweb,impactjobs}-search/` | impact-sector portals; ship `enabled: false` |
 | `tests/test_restricted_portals.py` | guards the restricted tier; new file |
 | `tests/test_interaction_language.py` | pins CLAUDE.md's reply-language rule; new file |
 | `templates/` | templates registered via `/add-template` |
@@ -331,6 +332,15 @@ before acting on an old entry — portals change.
 | **InfoJobs Italia** | **CLOSED — permanently** | Ceased operations **31 December 2025**; all user accounts and data deleted 1 January 2026 ([official notice](https://assistenza.infojobs.it/hc/it/articles/23116648861084-CHIUSURA-INFOJOBS-ITALIA)). Adevinta withdrew from the Italian market. There is nothing left to integrate — do not re-investigate the `api.infojobs.net` route, it served the Spanish business. |
 | **Talent.com** | viable, not built | robots-allowed, returns real Italian results. But its `ld+json` carries only vacancy URLs (an `ItemList` of `WebPage`), so titles/companies need regex over ~660 KB of markup — a fragile scraper, worth doing only if broader coverage is wanted. |
 | **Company ATS boards** | viable, needs board tokens | `boards-api.greenhouse.io/v1/boards/<token>/jobs` and `api.lever.co/v0/postings/<company>?mode=json` are public, unauthenticated JSON and verified working (Greenhouse returned 647 real jobs for a known board). The blocker is discovery: board tokens are per-company slugs and cannot be guessed — eight plausible Italian tokens all 404'd. Needs tokens read off each company's careers page, or a user-supplied list. |
+| **80,000 Hours** | **shipped, disabled** | Public Algolia search-only key read from the board page at runtime (never stored). robots allows all; terms: personal, non-commercial use, no automation clause. Summaries only. `.agents/skills/eighty-thousand-hours-search/` |
+| **Remote Impact** | **shipped, disabled** | Public RSS feeds only (`/feed/jobs/category/<slug>/`); the site offers them for reuse with attribution. Terms forbid scraping, so job pages are never fetched. Newest 50 per feed, 500-char excerpts. |
+| **UN Careers** | **shipped, disabled** | Public list API `api/public/opening/jo/list/filteredV2`. Never call the per-job endpoint: it bumps the posting's view count. Secretariat only (not UNDP/UNICEF/UNHCR/WFP). |
+| **Info Cooperazione** | **shipped, disabled** | Server-rendered HTML, no robots.txt, no terms page; content CC BY-NC-SA 4.0 - attribution kept on every result. |
+| **ReliefWeb** | **shipped, disabled, untested live** | Official API needs a pre-approved `appname` since Nov 2025 (`RELIEFWEB_APPNAME`). API-host robots.txt is `Disallow: /`; treated as open because the API docs invite programmatic use. Re-run the live test once an appname exists. |
+| **Impact Jobs** | **shipped, disabled** | impactjobs.org (JBoard). Parses the page's `window.jobsList` JSON; robots `Disallow: /rss/`, `Crawl-delay: 1` (honoured across runs); no terms on the site. ~650 remote jobs, mostly US; filter ids are board-specific, so the CLI fails with `FILTERS_CHANGED` if they drift. theimpactjob.com runs the same platform. |
+| Idealist | declined | Terms I.d (j)(k) forbid bots and scraping; API only under a separate agreement. |
+| Impactpool, Probably Good, Escape the City, data.org, Job4Good | not built | Technically reachable, but their terms forbid automated access. Ask for permission, or restricted tier. |
+| Tech Jobs for Good, Climatebase, Devex | unreachable | Cloudflare JS challenge on every path. UNjobs.org: robots `Disallow: /`. |
 | InPA, Jobrapido, Subito, Monster, Indeed | restricted tier | See the access map above and the tier rules below. No open-source scraper is reusable for any of them: the Subito projects target classifieds rather than Lavoro, and the InPA ones are commercial Apify actors. |
 
 ### SPID is permanently out of scope
